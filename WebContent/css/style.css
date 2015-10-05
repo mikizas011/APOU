@@ -1,0 +1,49 @@
+#body a, p, h1, h2, h3, h4, h5, input, label{font-family: "Helvetica Neue",Helvetica,Arial,sans-serif}
+#body a, p, label{font-size: 14px;}
+#body h1{font-weight: bold; font-size: 21px; margin-bottom: 20px;}
+#body h2{font-weight: bold; font-size: 15px; margin-bottom: 10px;}
+.loginWrapper, .registerWrapper{width: 400px; margin: 0 auto; display: block; margin-top: 50px; margin-bottom: 100px;}
+.loginWrapper .field, .loginWrapper .button, .registerWrapper .field, .registerWrapper .button{width: 310px; margin: 0 auto; margin-top: 10px; margin-bottom: 10px; display: block; height: 35px; font-weight: bold;}
+.loginWrapper .field, .loginWrapper .button, .registerWrapper .field, .registerWrapper .button{-moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px; }
+.loginWrapper .errormsg, .registerWrapper .errormsg{width: 310px; margin: 0 auto; margin-top: 10px; margin-bottom: 10px; display: block;}
+
+.loginWrapper .button, .registerWrapper .button{cursor: pointer; color: white;}
+.loginWrapper .message, .registerWrapper .message{text-align: center; font-size: 14px;}
+.loginWrapper a, .registerWrapper a{color: rgb(228, 88, 84); font-weight: bold;}
+
+.termsWrapper label{display: block; text-indent: -15px; padding-left: 90px; font-size: 14px; font-family: "Helvetica Neue",Helvetica,Arial,sans-serif}
+.termsWrapper input{width: 13px; height: 13px; padding: 0; margin: 0; margin-right: 10px; vertical-align: bottom; position: relative; top: -1 px; overflow: hidden;}
+
+.planWrapper{-moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px; border: 1px solid rgb(221, 221, 221);}
+.planWrapper{margin-top: 10px; margin-bottom: 10px;}
+.planWrapper:hover{cursor: pointer; background: rgba(51, 165, 213, 0.3);}
+.planWrapper table{width: 100%; margin-top: 5px;}
+.planWrapper td{width: 50%; padding-top: 5px; padding-bottom: 5px;}
+.planWrapper h2{margin-top: 5px; margin-left: 5px;}
+.planWrapper p{margin-left: 5px;}
+
+
+.phase .phases{float: left; padding-right: 15px;}
+.phase .checked{background: rgba(0, 255, 0, 0.3); cursor: pointer;}
+.phase .closed{background: rgba(100, 100, 100, 0.3); }
+.phase .opened{background: white; cursor: pointer;}
+.phase .actual{background: rgba(51, 165, 213, 0.3); cursor: pointer;}
+.phase .closed a{color: rgb(150, 150, 150); }
+
+.phase .phases li{text-align: center; height: 25px; list-style-type: none; width: 100px; margin-top:1px; margin-bottom: 1px; display: block; border: 1px solid rgb(221, 221, 221);}
+.phase .phases li a{line-height: 25px; height: 25px; font-size: 14px; display: block;  display: block;}
+.phase .phases .closed a:hover{cursor: default;}
+.phase .phases .actual a:link, .phases .actual a:visited{font-weight: bold; color: black; }
+
+.phase .content{width: 100%; padding-top: 1px;}
+
+.errorfont{font-size: 12px; font-weight: bold;}
+.errormsg{border: 1px solid #bd081c; background-color: rgb(255, 235, 233);}
+.errormsg p{padding: 2px 4px;}
+.red{background: rgb(228, 88, 84);}
+.green{background: green;}
+.blue{background: rgb(51, 165, 213);}
+.white{background: rgb(255, 255, 255);}
+.left{float: left;}
+.right{float: right;}
+.clear{clear: both;}
