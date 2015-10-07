@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.KeyStore.Entry;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -55,7 +56,11 @@ public class CargarPlan extends HttpServlet {
 				idPlan = Integer.parseInt((String) "" + request.getParameter("id"));
 			}
 			
+			
+			
 			if(idPlan != -1){
+			
+				request.getSession().setAttribute("idPlan", idPlan);
 				
 				//Obtenemos la fase en la que se encuentra el plan
 				Dao dao = new Dao();
@@ -63,10 +68,18 @@ public class CargarPlan extends HttpServlet {
 				int fase;
 				
 				try {
-					fase = dao.getWizard().getFase(idPlan);
+					
+					if(request.getParameter("fase") == null){
+						fase = dao.getWizard().getFase(idPlan);
+					}
+					else{
+						fase = Integer.parseInt(request.getParameter("fase"));
+					}
+					
 					
 					switch (fase) {
 						case 1:	phase1(request, response, dao, idPlan); break;
+						case 2:	phase2(request, response, dao, idPlan); break;
 					}
 					
 				} catch (SQLException e) {
@@ -91,11 +104,22 @@ public class CargarPlan extends HttpServlet {
 		
 		dao.close();
 		
+		
 		request.setAttribute("municipios", municipios);
 		request.setAttribute("phase1", p);
-		request.getSession().setAttribute("idPlan", idPlan);
 		
 		request.getRequestDispatcher("/user_area/phases/phase1.jsp").forward(request, response);
+		
+	}
+	
+	public void phase2(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan) throws SQLException, ServletException, IOException{
+		
+		
+		dao.close();
+		
+		
+		
+		request.getRequestDispatcher("/user_area/phases/phase2.jsp").forward(request, response);
 		
 	}
 

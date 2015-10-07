@@ -617,6 +617,50 @@ public class DaoPrograma {
 		
 	}
 	
+	public void pruebaIn() throws SQLException{
+		
+		
+		ArrayList<String> ues = new ArrayList<String>();
+		
+		ues.add("UE1");
+		ues.add("UE2");
+		ues.add("UE3");
+		
+		for(int i = 0; i < ues.size(); i++){
+			
+			System.out.println(ues.get(i));
+			
+				String sql = "UPDATE unidad_ejecucion SET numero_parcelas_aportadas = 6 WHERE id_plan=15 AND denominacion = '" + ues.get(i)+"'";
+				PreparedStatement statement;
+				statement = dao.getConection().prepareStatement(sql);
+				int suc = statement.executeUpdate();
+				
+				if(suc == 0){
+					sql = "INSERT INTO unidad_ejecucion (denominacion, numero_parcelas_aportadas, id_plan) values (?, ?, ?)";
+					
+					statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+					
+					statement.setString(1, ues.get(i));
+									
+					statement.setInt(2, 6);
+					
+					statement.setInt(3, 15);
+	
+					statement.execute();
+				}
+
+				
+
+			
+
+			
+			
+		}
+		
+		
+		
+	}
+	
 	
 	
 	//FIN OTRAS OPERACIONES COMUNES

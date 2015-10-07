@@ -1,3 +1,5 @@
+<%@page import="java.util.Arrays"%>
+<%@page import="com.mysql.fabric.xmlrpc.base.Array"%>
 <%@page import="java.util.Map.Entry"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.Iterator"%>
@@ -18,13 +20,17 @@
 		<script src="<%=Configuracion.getInstance().getRoot()%>js/jquery-1.11.1.js"></script>
 		<script type="text/javascript">
 		    $(document).ready(function() {
+
+		    	var ueNumber = document.getElementById("ues").rows.length -1;
+
 		        $("#add").click(function() {
+		          ueNumber = ueNumber +1;
 		          $('#ues tr:last').clone(true).insertAfter('#ues tr:last');
-		          var ueNumber = document.getElementById("ues").rows.length -1;
-		          $('#ues tr:last').replaceWith('<tr><td><button type="button" class="erase" id="bUE'+ueNumber+'">borrar</button></td><td>UE'+ueNumber+'</td><td><input name="UE'+ueNumber+'" type="number" ></td></tr>');
+		          $('#ues tr:last').replaceWith('<tr><td><button type="button" class="erase">borrar</button></td><td>UE'+ueNumber+'</td><td><input name="UE'+ueNumber+'" type="number" ></td></tr>');
 		          return false;
 		        });
-		        $(".erase").click(function() {
+		       
+		        $(document).on("click", ".erase", function() {
 		        	$(this).parent().parent().remove();
 			    });
 		        
@@ -48,7 +54,7 @@
 					<div class="phases">
 						<ul>
 							<li class="actual" title="Datos generales"><a href="#">Fase 1</a></li>
-							<li class="closed" title="Parcelas aportadas"><a href="">Fase 2</a></li>
+							<li class="closed" title="Parcelas aportadas"><a href="#">Fase 2</a></li>
 							<li class="closed" title="Ordenación urbanística estructural"><a href="#">Fase 3</a></li>
 							<li class="closed" title="Ordenación urbanística pormenorizada p.1."><a href="#">Fase 4</a></li>
 							<li class="closed" title="Ordenación urbanística pormenorizada p.2."><a href="#">Fase 5</a></li>
@@ -128,18 +134,20 @@
 				  				
 				  				<%if(p.getUes().size() == 0){%>
 				  					<tr>
-				  						<td><button type="button" class="erase" id="bUE1">borrar</button></td>
+				  						<td><button type="button" class="erase">borrar</button></td>
 					  					<td>UE1</td>
 						  				<td><input name="UE1" type="number" ></td>
 					  				</tr>
 				  				<%} else{	
 				  					
-					  					for (Entry<String, String> e : p.getUes().entrySet()) {%>
-	
+				  						Object [] keys = p.getUes().keySet().toArray();
+				  						Arrays.sort(keys);
+				  					
+				  						for(Object key : keys){%>
 											<tr>
-						  						<td><button type="button" class="erase" id="b<%=e.getKey()%>">borrar</button></td>
-						  						<td><%=e.getKey() %></td>
-							  					<td><input name="<%=e.getKey()%>" type="number" value="<%=e.getValue()%>" ></td>
+						  						<td><button type="button" class="erase" >borrar</button></td>
+						  						<td><%=key %></td>
+							  					<td><input name="<%=key%>" type="number" value="<%=p.getUes().get(key)%>" ></td>
 						  					</tr>	
 					  						
 					  					<%}

@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
 
+
 import model.Dao;
 import controller.errores.SQLError;
 import controller.wizard.classes.Municipio;
@@ -39,13 +40,6 @@ public class ComprobarFase extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-//	
-//		for (Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
-//			System.out.println("Key : " + entry.getKey() + " Value : " + request.getParameter(entry.getKey()));
-//		}		
-//		
-//		System.out.println("Para el plan de id: " + request.getSession().getAttribute("planId"));
 		
 		//Chequear si se valida.
 		
@@ -105,7 +99,7 @@ public class ComprobarFase extends HttpServlet {
 		}
 		
 		if(cf.size() == 0){
-			updatePhase1(request);
+			updatePhase1(request, response, ues);
 		}
 		else{
 			
@@ -129,7 +123,27 @@ public class ComprobarFase extends HttpServlet {
 		return cf;
 	}
 	
-	public void updatePhase1(HttpServletRequest request){
+	public void updatePhase1(HttpServletRequest request, HttpServletResponse response, HashMap<String, String> ues) throws ServletException, IOException{
+		
+		
+		Phase1 p = new Phase1((Integer)request.getSession().getAttribute("idPlan"), request.getParameter("denominacion_plan"), request.getParameter("denominacion_sector"), request.getParameter("numero_sector").toString(), request.getParameter("municipio"), request.getParameter("idioma"), request.getParameter("superficie"), null);
+		p.setUes(ues);
+		
+		
+		try {
+			Dao dao = new Dao();
+			dao.getWizard().updatePhase1(p);
+			dao.getWizard().updatePhase(p.getIdPlan(), 2);
+			dao.close();
+			request.setAttribute("id", p.getIdPlan());
+			request.getRequestDispatcher("/user_area/phases/phase2.jsp").forward(request, response);
+
+		} catch (SQLException e) {
+
+		
+		
+		}
+		
 		
 	}
 	

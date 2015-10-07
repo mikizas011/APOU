@@ -27,11 +27,12 @@
 .phase .checked{background: rgba(0, 255, 0, 0.3); cursor: pointer;}
 .phase .closed{background: rgba(100, 100, 100, 0.3); }
 .phase .opened{background: white; cursor: pointer;}
-.phase .actual{background: rgba(51, 165, 213, 0.3); cursor: pointer;}
+.phase .actual{cursor: pointer;}
 .phase .closed a{color: rgb(150, 150, 150); }
 
 .phase .phases li{text-align: center; height: 25px; list-style-type: none; width: 100px; margin-top:1px; margin-bottom: 1px; display: block; border: 1px solid rgb(221, 221, 221);}
 .phase .phases li a{line-height: 25px; height: 25px; font-size: 14px; display: block;  display: block;}
+.phase a:link, .phase a:visited{color: black;}
 .phase .phases .closed a:hover{cursor: default;}
 .phase .phases .actual a:link, .phases .actual a:visited{font-weight: bold; color: black; }
 
