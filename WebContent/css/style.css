@@ -32,9 +32,7 @@
 
 .phase .phases li{text-align: center; height: 25px; list-style-type: none; width: 100px; margin-top:1px; margin-bottom: 1px; display: block; border: 1px solid rgb(221, 221, 221);}
 .phase .phases li a{line-height: 25px; height: 25px; font-size: 14px; display: block;  display: block;}
-.phase a:link, .phase a:visited{color: black;}
-.phase .phases .closed a:hover{cursor: default;}
-.phase .phases .actual a:link, .phases .actual a:visited{font-weight: bold; color: black; }
+.phase .actual a{font-weight: bold; color: black; }
 
 .phase .content{width: 100%; padding-top: 1px;}
 

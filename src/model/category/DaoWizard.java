@@ -28,6 +28,11 @@ public class DaoWizard {
 		
 		//CARGAR PLAN
 		
+		/** 
+		 * @param idPlan id del plan.
+		 * @return devuleve la fase en la que se encuntra un plan.
+		 * @throws SQLException
+		 */
 		public int getFase(int idPlan) throws SQLException{
 			
 			String sql = "SELECT fase FROM plan WHERE id_plan = "+idPlan;
@@ -43,16 +48,55 @@ public class DaoWizard {
 			return -1;
 		}
 		
+		/** cambia la fase en la que se encuentra un plan, y actualiza las fases que habrá que comprobar si esta es inferior a la fase en la que el plan se encuentra.
+		 * @param plan id del plan que se quiera actualizar la fase
+		 * @param fase fase a la que se quiere actualizar
+		 * @throws SQLException
+		 */
 		public void updatePhase(int plan, int fase) throws SQLException{
 			
-			String sql = "UPDATE plan SET fase = ? WHERE id_plan = " + plan;
+			String sql = "";
+			
+			switch (fase) {
+				case 2: sql = "fase_1_correct = 1, fase_2_correct = 0, fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
+				case 3: sql = "fase_1_correct = 1, fase_2_correct = 1, fase_3_correct = 0, fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
+				case 4: sql = "fase_1_correct = 1, fase_2_correct = 1, fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
+			}
+			
+			sql = "UPDATE plan SET " + sql + ", fase = ? WHERE id_plan = " + plan;
 			
 			PreparedStatement statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
 			
 			statement.setInt(1, fase);
-
+			
 			statement.execute();
 			
+		}
+		
+
+		/**
+		 * @param plan Plan del que se quiere consultar las fases correctas.
+		 * @return devuleve un array de booleanos con las fases que se consideran correctas.
+		 * @throws SQLException 
+		 */
+		public boolean [] getFasesCorrectas(int plan) throws SQLException{
+			boolean [] fases = {false, false, false, false, false, false, false, false};
+			
+			String sql = "SELECT fase_1_correct, fase_2_correct, fase_3_correct, fase_4_correct, fase_5_correct, fase_6_correct, fase_7_correct, fase_8_correct FROM plan WHERE id_plan = " + plan;
+			
+			PreparedStatement statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+
+			ResultSet rs = statement.executeQuery();
+			
+			if(rs.next()){
+				for(int i = 0; i < fases.length; i++){
+					if(rs.getInt("fase_"+(i+1)+"_correct") == 1){
+						fases[i] = true;
+					}
+				}
+			}
+			
+			return fases;
 		}
 	
 	

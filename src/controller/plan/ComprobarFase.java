@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
 
+
 import model.Dao;
 import controller.errores.SQLError;
 import controller.wizard.classes.Municipio;
@@ -135,6 +136,29 @@ public class ComprobarFase extends HttpServlet {
 			dao.getWizard().updatePhase1(p);
 			dao.getWizard().updatePhase(p.getIdPlan(), 2);
 			dao.close();
+			
+			//Obtenemos las fases correctas
+			boolean faseCorrecta[] = dao.getWizard().getFasesCorrectas(p.getIdPlan());
+			
+			String estadoFase[] = new String[20];
+			
+			for(int i = 0; i < 8; i++){
+				
+				if(faseCorrecta[i]){
+					estadoFase[i] = "checked";
+				}
+				else{
+					estadoFase[i] = "opened";
+				}
+				
+			}
+			
+			if(2 < 8){
+				estadoFase[1] = "actual";
+			}
+			
+			request.setAttribute("estadoFase", estadoFase);
+			
 			request.setAttribute("id", p.getIdPlan());
 			request.getRequestDispatcher("/user_area/phases/phase2.jsp").forward(request, response);
 

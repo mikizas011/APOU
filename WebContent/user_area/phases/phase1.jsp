@@ -39,6 +39,16 @@
 		        
 		    });
 		</script>
+		<script>
+			function transferCallToServlet(fase, id)
+			{
+				document.requestForm.action = "<%=Configuracion.getInstance().getRoot() %>user_area/load_plan";
+				document.requestForm.id.value = id;
+				document.requestForm.fase.value = fase;
+				document.requestForm.submit();
+				
+			}
+		</script>
 		
 		
 	</head>
@@ -49,32 +59,36 @@
 		<div class="marginNavbarUser"></div>
 		<div class = "contentWrapper white">
 			<div id="body">
-				
+				<%String estadoFase[] = (String[])request.getAttribute("estadoFase");%>
 				<div class="phase">
-					<div class="phases">
-						<ul>
-							<li class="actual" title="Datos generales"><a href="#">Fase 1</a></li>
-							<li class="closed" title="Parcelas aportadas"><a href="#">Fase 2</a></li>
-							<li class="closed" title="Ordenación urbanística estructural"><a href="#">Fase 3</a></li>
-							<li class="closed" title="Ordenación urbanística pormenorizada p.1."><a href="#">Fase 4</a></li>
-							<li class="closed" title="Ordenación urbanística pormenorizada p.2."><a href="#">Fase 5</a></li>
-							<li class="closed" title="Cálculo de la edificabilidad urbanística ponderada"><a href="#">Fase 6</a></li>
-							<li class="closed" title="Edificabilidad urbanística correspondiente al ayuntamiento"><a href="#">Fase 7</a></li>
-							<li class="closed" title="Edificios fuera de ordenación"><a href="#">Fase 8</a></li>
-							<li class="closed" title="Red de sistemas locales"><a href="#">Fase 9</a></li>
-							<li class="closed" title="Selección de leyes incluidas"><a href="#">Fase 10</a></li>
-							<li class="closed" title="Introducción"><a href="#">Fase 11</a></li>
-							<li class="closed" title="Análisis urbanístico del A.I.U. 21"><a href="#">Fase 12</a></li>
-							<li class="closed" title="Determinaciones de carácter estructural para el ámbito"><a href="#">Fase 13</a></li>
-							<li class="closed" title="Justificación de la conveniencia de la propuesta"><a href="#">Fase 14</a></li>
-							<li class="closed" title="Tramitación"><a href="#">Fase 15</a></li>
-							<li class="closed" title="Criterios y objetivos del plan"><a href="#">Fase 16</a></li>
-							<li class="closed" title="Descripción de la ordenación propuesta"><a href="#">Fase 17</a></li>
-							<li class="closed" title="Justificación y cumplimiento del planeamiento general y la legislación urbanística"><a href="#">Fase 18</a></li>
-							<li class="closed" title="Justificación del cumplimiento de las determinaciones de la ordenación territorial"><a href="#">Fase 19</a></li>
-							<li class="closed" title="Gestión y ejecución del plan parcial"><a href="#">Fase 20</a></li>
-						</ul>
-					</div>
+					<form name="requestForm" method="POST">
+					<input type="hidden" name="fase" >
+					<input type="hidden" name="id" >
+						<div class="phases">
+							<ul>
+								<li class="<%=estadoFase[0] %>" title="Datos generales"><a onclick="transferCallToServlet(1, <%=request.getSession().getAttribute("idPlan")%>)">Fase 1</a></li>
+								<li class="<%=estadoFase[1] %>" title="Parcelas aportadas"><a onclick="transferCallToServlet(2, <%=request.getSession().getAttribute("idPlan")%>)">Fase 2</a></li>
+								<li class="<%=estadoFase[2] %>" title="Ordenación urbanística estructural"><a onclick="transferCallToServlet(3, <%=request.getSession().getAttribute("idPlan")%>)">Fase 3</a></li>
+								<li class="<%=estadoFase[3] %>" title="Ordenación urbanística pormenorizada p.1."><a onclick="transferCallToServlet(4, <%=request.getSession().getAttribute("idPlan")%>)">Fase 4</a></li>
+								<li class="<%=estadoFase[4] %>" title="Ordenación urbanística pormenorizada p.2."><a onclick="transferCallToServlet(5, <%=request.getSession().getAttribute("idPlan")%>)">Fase 5</a></li>
+								<li class="<%=estadoFase[5] %>" title="Cálculo de la edificabilidad urbanística ponderada"><a onclick="transferCallToServlet(6, <%=request.getSession().getAttribute("idPlan")%>)">Fase 6</a></li>
+								<li class="<%=estadoFase[6] %>" title="Edificabilidad urbanística correspondiente al ayuntamiento"><a onclick="transferCallToServlet(7, <%=request.getSession().getAttribute("idPlan")%>)">Fase 7</a></li>
+								<li class="<%=estadoFase[7] %>" title="Red de sistemas locales"><a onclick="transferCallToServlet(8, <%=request.getSession().getAttribute("idPlan")%>)">Fase 8</a></li>
+								<li class="closed" title="Edificios fuera de ordenación"><a onclick="transferCallToServlet(9, <%=request.getSession().getAttribute("idPlan")%>)">Fase 9</a></li>
+								<li class="closed" title="Selección de leyes incluidas"><a onclick="transferCallToServlet(10, <%=request.getSession().getAttribute("idPlan")%>)">Fase 10</a></li>
+								<li class="closed" title="Introducción"><a onclick="transferCallToServlet(11, <%=request.getSession().getAttribute("idPlan")%>)">Fase 11</a></li>
+								<li class="closed" title="Análisis urbanístico del A.I.U. 21"><a onclick="transferCallToServlet(12, <%=request.getSession().getAttribute("idPlan")%>)">Fase 12</a></li>
+								<li class="closed" title="Determinaciones de carácter estructural para el ámbito"><a onclick="transferCallToServlet(13, <%=request.getSession().getAttribute("idPlan")%>)">Fase 13</a></li>
+								<li class="closed" title="Justificación de la conveniencia de la propuesta"><a onclick="transferCallToServlet(14, <%=request.getSession().getAttribute("idPlan")%>)">Fase 14</a></li>
+								<li class="closed" title="Tramitación"><a onclick="transferCallToServlet(15, <%=request.getSession().getAttribute("idPlan")%>)">Fase 15</a></li>
+								<li class="closed" title="Criterios y objetivos del plan"><a onclick="transferCallToServlet(16, <%=request.getSession().getAttribute("idPlan")%>)">Fase 16</a></li>
+								<li class="closed" title="Descripción de la ordenación propuesta"><a onclick="transferCallToServlet(17, <%=request.getSession().getAttribute("idPlan")%>)">Fase 17</a></li>
+								<li class="closed" title="Justificación y cumplimiento del planeamiento general y la legislación urbanística"><a onclick="transferCallToServlet(18, <%=request.getSession().getAttribute("idPlan")%>)">Fase 18</a></li>
+								<li class="closed" title="Justificación del cumplimiento de las determinaciones de la ordenación territorial"><a onclick="transferCallToServlet(19, <%=request.getSession().getAttribute("idPlan")%>)">Fase 19</a></li>
+								<li class="closed" title="Gestión y ejecución del plan parcial"><a onclick="transferCallToServlet(20, <%=request.getSession().getAttribute("idPlan")%>)">Fase 20</a></li>
+							</ul>
+						</div>
+					</form>
 					<div class="content">
 						<% ArrayList<Municipio> municipios = (ArrayList<Municipio>)request.getAttribute("municipios"); %>
 						<% Phase1 p = (Phase1)request.getAttribute("phase1");%>

@@ -76,6 +76,26 @@ public class CargarPlan extends HttpServlet {
 						fase = Integer.parseInt(request.getParameter("fase"));
 					}
 					
+					//Obtenemos las fases correctas
+					boolean faseCorrecta[] = dao.getWizard().getFasesCorrectas(idPlan);
+					String estadoFase[] = new String[20];
+					
+					for(int i = 0; i < 8; i++){
+						
+						if(faseCorrecta[i]){
+							estadoFase[i] = "checked";
+						}
+						else{
+							estadoFase[i] = "opened";
+						}
+						
+					}
+					
+					if(fase < 8){
+						estadoFase[fase] = "actual";
+					}
+					
+					request.setAttribute("estadoFase", estadoFase);
 					
 					switch (fase) {
 						case 1:	phase1(request, response, dao, idPlan); break;
@@ -113,11 +133,6 @@ public class CargarPlan extends HttpServlet {
 	}
 	
 	public void phase2(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan) throws SQLException, ServletException, IOException{
-		
-		
-		dao.close();
-		
-		
 		
 		request.getRequestDispatcher("/user_area/phases/phase2.jsp").forward(request, response);
 		
