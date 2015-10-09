@@ -1,19 +1,17 @@
-package controller.wizard.classes;
+package controller.wizard.classes.phases;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Phase1 {
+public class Phase1 extends Phase{
 
-	private int idPlan;
 	private String denominacionPlan, denominacionSector, numeroSector, Municipio, idioma, superficie;
 	private HashMap<String, String> ues;
 	
 	public Phase1(int idPlan, String denominacionPlan,
 			String denominacionSector, String numeroSector, String municipio,
 			String idioma, String superficie, HashMap<String, String> ues) {
-		super();
-		this.idPlan = idPlan;
+		super(idPlan);
 		this.denominacionPlan = denominacionPlan;
 		this.denominacionSector = denominacionSector;
 		this.numeroSector = numeroSector;
@@ -22,13 +20,7 @@ public class Phase1 {
 		this.superficie = superficie;
 		this.ues = ues;
 	}
-	
-	public int getIdPlan() {
-		return idPlan;
-	}
-	public void setIdPlan(int idPlan) {
-		this.idPlan = idPlan;
-	}
+
 	public String getDenominacionPlan() {
 		return denominacionPlan;
 	}

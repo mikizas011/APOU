@@ -1,9 +1,9 @@
+<%@page import="controller.wizard.classes.phases.Phase1"%>
 <%@page import="java.util.Arrays"%>
 <%@page import="com.mysql.fabric.xmlrpc.base.Array"%>
 <%@page import="java.util.Map.Entry"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.Iterator"%>
-<%@page import="controller.wizard.classes.Phase1"%>
 <%@page import="controller.wizard.classes.Municipio"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="controller.wizard.classes.Plan"%>

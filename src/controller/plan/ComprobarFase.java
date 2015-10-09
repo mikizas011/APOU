@@ -16,10 +16,13 @@ import javax.servlet.http.HttpServletResponse;
 
 
 
+
+
 import model.Dao;
 import controller.errores.SQLError;
+import controller.plan.comprobadores.ComprobarFase1;
 import controller.wizard.classes.Municipio;
-import controller.wizard.classes.Phase1;
+import controller.wizard.classes.phases.Phase1;
 
 /**
  * Servlet implementation class ComprobarFase
@@ -43,149 +46,18 @@ public class ComprobarFase extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		//Chequear si se valida.
-		
-		String aceptada = "";
-		
-		try{
+		try {
 			switch (Integer.parseInt(request.getParameter("phase"))) {
-				case 1:	checkPhase1(request, response); break;	
-				
+				case 1:	new ComprobarFase1(request, response).execute(); break;	
 			}
-		}
-		catch(SQLException e){
+		} catch (SQLException e) {
 			new SQLError(request, response, e);
 		}
 		
 		
+		
+		
 	
-	}
-	
-	public ArrayList<String> checkPhase1(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
-
-		ArrayList<String> cf = new ArrayList<String>();
-		
-		if(isNull(request.getParameter("denominacion_plan"))){
-			cf.add("El plan tiene que tener una denominación de entre 1 y 100 caracteres.");
-		}
-		if(isNull(request.getParameter("denominacion_sector"))){
-			cf.add("El sector tiene que tener una denominación de entre 1 y 100 caracteres.\n");
-		}
-		if(!isPositive(request.getParameter("numero_sector"))){
-			cf.add("El número de sector tiene que ser positivo.\n");
-		}
-		if(!isPositive(request.getParameter("superficie"))){
-			cf.add("La superficie tiene que ser positiva.\n");
-		}
-
-		boolean existeUE = false;
-		boolean errorParAp = false;
-		
-		HashMap<String, String> ues = new HashMap<String, String>();
-		
-		for (Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
-			if(entry.getKey().indexOf("UE") != -1){
-				existeUE = true;
-				if(!isPositive(request.getParameter(entry.getKey()))){
-					errorParAp = true;
-				}
-				ues.put(entry.getKey(), request.getParameter(entry.getKey()));
-			}
-		}	
-		
-		if(!existeUE){
-			cf.add("Por lo menos tiene que haber una unidad de ejecución.\n");
-		}
-		if(errorParAp){
-			cf.add("El número de parcelas aportadas por unidad de ejecución tiene que ser por lo menos de 1.\n");
-		}
-		
-		if(cf.size() == 0){
-			updatePhase1(request, response, ues);
-		}
-		else{
-			
-			Phase1 p = new Phase1(-1, request.getParameter("denominacion_plan"), request.getParameter("denominacion_sector"), request.getParameter("numero_sector"), request.getParameter("municipio"), request.getParameter("idioma"), request.getParameter("superficie"), null);
-			p.setUes(ues);
-			
-			Dao dao = new Dao();
-			
-			ArrayList<Municipio> municipios = dao.getWizard().getMunicipios();
-			
-			dao.close();
-			
-			request.setAttribute("msg", cf);
-			request.setAttribute("municipios", municipios);
-			request.setAttribute("phase1", p);
-			request.setAttribute("id", request.getSession().getAttribute("id"));
-			
-			request.getRequestDispatcher("/user_area/phases/phase1.jsp").forward(request, response);
-		}
-		
-		return cf;
-	}
-	
-	public void updatePhase1(HttpServletRequest request, HttpServletResponse response, HashMap<String, String> ues) throws ServletException, IOException{
-		
-		
-		Phase1 p = new Phase1((Integer)request.getSession().getAttribute("idPlan"), request.getParameter("denominacion_plan"), request.getParameter("denominacion_sector"), request.getParameter("numero_sector").toString(), request.getParameter("municipio"), request.getParameter("idioma"), request.getParameter("superficie"), null);
-		p.setUes(ues);
-		
-		
-		try {
-			Dao dao = new Dao();
-			dao.getWizard().updatePhase1(p);
-			dao.getWizard().updatePhase(p.getIdPlan(), 2);
-			dao.close();
-			
-			//Obtenemos las fases correctas
-			boolean faseCorrecta[] = dao.getWizard().getFasesCorrectas(p.getIdPlan());
-			
-			String estadoFase[] = new String[20];
-			
-			for(int i = 0; i < 8; i++){
-				
-				if(faseCorrecta[i]){
-					estadoFase[i] = "checked";
-				}
-				else{
-					estadoFase[i] = "opened";
-				}
-				
-			}
-			
-			if(2 < 8){
-				estadoFase[1] = "actual";
-			}
-			
-			request.setAttribute("estadoFase", estadoFase);
-			
-			request.setAttribute("id", p.getIdPlan());
-			request.getRequestDispatcher("/user_area/phases/phase2.jsp").forward(request, response);
-
-		} catch (SQLException e) {
-
-		
-		
-		}
-		
-		
-	}
-	
-	public boolean isNull(String s){
-		if(s.equals("") || s.toUpperCase().equals("NULL")){
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean isPositive(String s){
-		if(isNull(s)){
-			return false;
-		}
-		else if((Double) Double.parseDouble(s) <= 0){
-			return false;
-		}
-		return true;
 	}
 
 

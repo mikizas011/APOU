@@ -11,9 +11,9 @@ import java.util.Map.Entry;
 import controller.Configuracion;
 import controller.wizard.classes.Municipio;
 import controller.wizard.classes.ParcelaAportada;
-import controller.wizard.classes.Phase1;
 import controller.wizard.classes.Plan;
 import controller.wizard.classes.UnidadEjecucion;
+import controller.wizard.classes.phases.Phase1;
 import model.Dao;
 
 public class DaoWizard {
@@ -48,26 +48,49 @@ public class DaoWizard {
 			return -1;
 		}
 		
-		/** cambia la fase en la que se encuentra un plan, y actualiza las fases que habrá que comprobar si esta es inferior a la fase en la que el plan se encuentra.
-		 * @param plan id del plan que se quiera actualizar la fase
-		 * @param fase fase a la que se quiere actualizar
+
+		/** Si se chequea una fase ya chequeada, cerrará todas las que estén por detrás de esta. Las de mismo nivel no
+		 * @param plan id del plan
+		 * @param fase fase que has chequeado
 		 * @throws SQLException
 		 */
-		public void updatePhase(int plan, int fase) throws SQLException{
+		public void setPhaseCorrect(int plan, int fase) throws SQLException{
 			
 			String sql = "";
 			
 			switch (fase) {
-				case 2: sql = "fase_1_correct = 1, fase_2_correct = 0, fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
-				case 3: sql = "fase_1_correct = 1, fase_2_correct = 1, fase_3_correct = 0, fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
-				case 4: sql = "fase_1_correct = 1, fase_2_correct = 1, fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
+				case 1: sql = "fase_1_correct = 1, fase_2_correct = 0, fase_3_correct = 0, fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
+				case 2: sql = "fase_2_correct = 1, fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
+				case 3: sql = "fase_3_correct = 1, fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
+				case 4: sql = "fase_4_correct = 1, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
 			}
 			
 			sql = "UPDATE plan SET " + sql + ", fase = ? WHERE id_plan = " + plan;
 			
 			PreparedStatement statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
 			
-			statement.setInt(1, fase);
+			statement.setInt(1, (fase+1));
+			
+			statement.execute();
+			
+		}
+		
+		public void setPhaseIncorrect(int plan, int fase) throws SQLException{
+			
+			String sql = "";
+			
+			switch (fase) {
+				case 1: sql = "fase_1_correct = 0, fase_2_correct = 0, fase_3_correct = 0, fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
+				case 2: sql = "fase_2_correct = 0, fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
+				case 3: sql = "fase_3_correct = 0, fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
+				case 4: sql = "fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
+			}
+			
+			sql = "UPDATE plan SET " + sql + ", fase = ? WHERE id_plan = " + plan;
+			
+			PreparedStatement statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+			
+			statement.setInt(1, (fase));
 			
 			statement.execute();
 			
@@ -179,15 +202,17 @@ public class DaoWizard {
 			}
 			
 		}
-		
-		notIn = notIn.substring(0, notIn.length() -2);
-		
-		sql = "DELETE FROM unidad_ejecucion WHERE denominacion NOT IN ("+notIn+") AND id_plan = " + p.getIdPlan();
+		if(notIn.length() > 2){
+			notIn = notIn.substring(0, notIn.length() -2);
+			
+			sql = "DELETE FROM unidad_ejecucion WHERE denominacion NOT IN ("+notIn+") AND id_plan = " + p.getIdPlan();
 
-		statement = dao.getConection().prepareStatement(sql);
+			statement = dao.getConection().prepareStatement(sql);
 
-		statement.execute();
+			statement.execute();
+		}
 		
+				
 		//Renombramiento de las unidades de ejecución para ordenarlas
 		
 		sql = "SELECT id_unidad_ejecucion FROM unidad_ejecucion WHERE id_plan = " + p.getIdPlan();

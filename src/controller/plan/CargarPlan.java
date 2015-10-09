@@ -19,8 +19,8 @@ import javax.servlet.http.HttpSession;
 import controller.Configuracion;
 import controller.errores.SQLError;
 import controller.wizard.classes.Municipio;
-import controller.wizard.classes.Phase1;
 import controller.wizard.classes.Plan;
+import controller.wizard.classes.phases.Phase1;
 import model.Dao;
 
 /**
@@ -45,7 +45,8 @@ public class CargarPlan extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-			
+
+		
 			//Obtenemos la id del plan que estamos editando
 			int idPlan = -1;
 			
@@ -66,6 +67,7 @@ public class CargarPlan extends HttpServlet {
 				Dao dao = new Dao();
 				
 				int fase;
+				int difFase = 0;
 				
 				try {
 					
@@ -73,26 +75,32 @@ public class CargarPlan extends HttpServlet {
 						fase = dao.getWizard().getFase(idPlan);
 					}
 					else{
+						difFase = dao.getWizard().getFase(idPlan);
 						fase = Integer.parseInt(request.getParameter("fase"));
+						difFase = difFase - fase;
 					}
 					
 					//Obtenemos las fases correctas
 					boolean faseCorrecta[] = dao.getWizard().getFasesCorrectas(idPlan);
-					String estadoFase[] = new String[20];
 					
-					for(int i = 0; i < 8; i++){
+					String estadoFase[] = new String[8];
+					
+					for(int i = 0; i < fase + difFase; i++){
 						
 						if(faseCorrecta[i]){
 							estadoFase[i] = "checked";
 						}
 						else{
 							estadoFase[i] = "opened";
-						}
-						
+						}			
+					}
+					
+					for(int i = fase + difFase; i < 8; i++){
+						estadoFase[i] = "closed";
 					}
 					
 					if(fase < 8){
-						estadoFase[fase] = "actual";
+						estadoFase[fase-1] = "actual";
 					}
 					
 					request.setAttribute("estadoFase", estadoFase);
@@ -116,7 +124,16 @@ public class CargarPlan extends HttpServlet {
 		
 		//Cargamos los municipios disponibles, y la información referente a la fase 1
 		ArrayList<Municipio> municipios = dao.getWizard().getMunicipios();
-		Phase1 p = dao.getWizard().getPhase1(idPlan);
+		
+		Phase1 p = null;
+		
+		if((ArrayList<String>) request.getAttribute("msg") != null){
+			p = (Phase1) request.getAttribute("phase");
+		}
+		else{
+			p = dao.getWizard().getPhase1(idPlan);
+		}
+		
 		
 		if(p.getDenominacionPlan() == null){
 			p.setDenominacionPlan("P: " + new Date());
