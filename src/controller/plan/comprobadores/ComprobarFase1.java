@@ -95,20 +95,6 @@ public class ComprobarFase1 extends CerrarFase{
 	}
 
 	@Override
-	void attributeLoad(Phase p, ArrayList<String> msg, boolean isCorrect) throws SQLException  {
-
-		if(isCorrect){
-			request.setAttribute("id", request.getSession().getAttribute("idPlan"));
-		}
-		else{
-			request.setAttribute("id", p.getIdPlan());
-			request.setAttribute("msg", msg);
-			request.setAttribute("phase", p);
-		}
-
-	}
-
-	@Override
 	Phase getUpdateableIncorrectPhase() {
 		Phase1 p = (Phase1) retrieveIncorrectPhaseObject();
 		

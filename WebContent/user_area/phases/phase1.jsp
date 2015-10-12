@@ -16,7 +16,7 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 		<link rel="stylesheet" href="<%=Configuracion.getInstance().getRoot()%>css/style.css" type="text/css">
-		<title>Phase 1</title>
+		<title>Datos generales</title>
 		<script src="<%=Configuracion.getInstance().getRoot()%>js/jquery-1.11.1.js"></script>
 		<script type="text/javascript">
 		    $(document).ready(function() {

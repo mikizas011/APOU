@@ -21,6 +21,7 @@ import controller.errores.SQLError;
 import controller.wizard.classes.Municipio;
 import controller.wizard.classes.Plan;
 import controller.wizard.classes.phases.Phase1;
+import controller.wizard.classes.phases.Phase2;
 import model.Dao;
 
 /**
@@ -150,6 +151,21 @@ public class CargarPlan extends HttpServlet {
 	}
 	
 	public void phase2(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan) throws SQLException, ServletException, IOException{
+		
+		
+		
+		Phase2 p = null;
+		
+		if((ArrayList<String>) request.getAttribute("msg") != null){
+			p = (Phase2) request.getAttribute("phase");
+		}
+		else{
+			p = dao.getWizard().getPhase2(idPlan);
+		}
+		
+		dao.close();
+		
+		request.setAttribute("phase2", p);
 		
 		request.getRequestDispatcher("/user_area/phases/phase2.jsp").forward(request, response);
 		

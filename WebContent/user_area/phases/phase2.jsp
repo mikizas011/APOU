@@ -1,9 +1,10 @@
+<%@page import="controller.wizard.classes.u.P2unidadEjecucion"%>
+<%@page import="controller.wizard.classes.phases.Phase2"%>
 <%@page import="java.util.Arrays"%>
 <%@page import="com.mysql.fabric.xmlrpc.base.Array"%>
 <%@page import="java.util.Map.Entry"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.Iterator"%>
-<%@page import="controller.wizard.classes.Phase1"%>
 <%@page import="controller.wizard.classes.Municipio"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="controller.wizard.classes.Plan"%>
@@ -16,7 +17,7 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 		<link rel="stylesheet" href="<%=Configuracion.getInstance().getRoot()%>css/style.css" type="text/css">
-		<title>Phase 1</title>
+		<title>Parcelas aportadas</title>
 		<script src="<%=Configuracion.getInstance().getRoot()%>js/jquery-1.11.1.js"></script>
 		<script>
 			function transferCallToServlet(fase, id)
@@ -71,8 +72,105 @@
 						</div>
 					</form>
 					<div class="content">
+						<% Phase2 p = (Phase2)request.getAttribute("phase2");%>
+	
+						<h1>PARCELAS APORTADAS</h1>
+
+						<form method="POST" action="<%=Configuracion.getInstance().getRoot()%>user_area/check_phase" >
+								
+							<%
+							for (Entry<Integer, P2unidadEjecucion> entry : p.getMap().entrySet()) {
+								
+								P2unidadEjecucion ue = entry.getValue();
+		
+								%>
+								
+								<div class="unidadEjecucion">
+								
+									<h2><%=ue.getDenominacion() %></h2>
+								
+									<table>
+									
+										<tr>
+											<th>PARCELA</th>
+											<th>PROPIETARIO</th>
+											<th>DOMINIO</th>
+											<th>SUPERFICIE</th>											
+										</tr>
+										
+										<%
+											for(int i = 0; i < ue.getParcelas().size(); i++){%>
+											
+											<tr>
+												<td><%=ue.getParcelas().get(i).getDenominacion() %></td>
+												<td><input name="<%=ue.getParcelas().get(i).getDenominacion() + ":propietario" %>" type="text" value="<%=ue.getParcelas().get(i).getPropietario() %>" ></td>
+												<td>
+													<select name="<%=ue.getParcelas().get(i).getDenominacion()%>:dominio">
+													
+														<%
+														if(ue.getParcelas().get(i).getDominio() != null){
+															if(ue.getParcelas().get(i).getDominio().equals("Pública patrimonial")){ %>
+															  	<option value="Pública patrimonial" selected>Pública patrimonial</option>
+																<option value="Pública de cesión">Pública de cesión</option>
+																<option value="Privada">Privada</option>
+													  		<%} else if(ue.getParcelas().get(i).getDominio().equals("Pública de cesión")){ %>
+															  	<option value="Pública patrimonial">Pública patrimonial</option>
+																<option value="Pública de cesión" selected>Pública de cesión</option>
+																<option value="Privada">Privada</option>
+													  		<%}else{%>
+													  			<option value="Pública patrimonial">Pública patrimonial</option>
+																<option value="Pública de cesión" selected>Pública de cesión</option>
+																<option value="Privada">Privada</option>
+													  			
+													  		<%}
+															} else{%>
+																<option value="Pública patrimonial" selected>Pública patrimonial</option>
+																<option value="Pública de cesión">Pública de cesión</option>
+																<option value="Privada">Privada</option>
+														<%} %>
+													
+														
+													</select>
+												</td>
+												<td><input name="<%=ue.getParcelas().get(i).getDenominacion() + ":superficie" %>" type="number" value="<%=ue.getParcelas().get(i).getSuperficie() %>" ></td>
+											</tr>
+												
+											<%}%>
+									
+									</table>
+									
+									<table>
+										<tr>
+											<th>M2 DE SUPERFICIE DE SUELO CON SERVIDUMBRES SECTORIALES</th>
+											<td><input name="<%=ue.getDenominacion() + ":servidumbre" %>" type="number" ></td>
+										</tr>
+									</table>
+									<input name="<%=ue.getDenominacion() + ":idUe" %>" type="hidden" value="<%=ue.getIdUnidadEjecucion() %>">
+									
+								
+								</div>
+								
+								
+														
+	
+							<%}%>
 						
+							<input type="hidden" name="phase" value="2">
+					  		<input class="button" type="submit" value="Comprobar y guardar">
 						
+						</form>
+						
+						<%if(request.getAttribute("msg") != null){ 
+							 ArrayList<String> msg = (ArrayList<String>)request.getAttribute("msg"); 
+							 %>
+							 <div class="errormsg">
+							 <%
+							 for(int i = 0; i < msg.size(); i++){
+							 %>
+								<p class="errorfont"><%=msg.get(i).toString() %></p>
+							<%}%>
+							 	</div>
+						<%}%>
 		
 					    
 					</div>

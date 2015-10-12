@@ -10,10 +10,12 @@ import java.util.Map.Entry;
 
 import controller.Configuracion;
 import controller.wizard.classes.Municipio;
-import controller.wizard.classes.ParcelaAportada;
 import controller.wizard.classes.Plan;
 import controller.wizard.classes.UnidadEjecucion;
 import controller.wizard.classes.phases.Phase1;
+import controller.wizard.classes.phases.Phase2;
+import controller.wizard.classes.u.P2unidadEjecucion;
+import controller.wizard.classes.u.ParcelaAportada;
 import model.Dao;
 
 public class DaoWizard {
@@ -202,6 +204,19 @@ public class DaoWizard {
 			}
 			
 		}
+		
+		sql = "SELECT id_unidad_ejecucion FROM unidad_ejecucion WHERE id_plan = " + p.getIdPlan();
+
+		ArrayList<Integer> idsUnidadesEjecucionAntiguas = new ArrayList<Integer>();
+		
+		PreparedStatement stmt = (PreparedStatement) dao.getConection().prepareStatement(sql);
+		
+		ResultSet rs = stmt.executeQuery();
+		
+		while(rs.next()){
+			idsUnidadesEjecucionAntiguas.add(rs.getInt("id_unidad_ejecucion"));
+		}
+		
 		if(notIn.length() > 2){
 			notIn = notIn.substring(0, notIn.length() -2);
 			
@@ -219,9 +234,9 @@ public class DaoWizard {
 
 		ArrayList<Integer> idsUnidadesEjecucion = new ArrayList<Integer>();
 		
-		PreparedStatement stmt = (PreparedStatement) dao.getConection().prepareStatement(sql);
+		stmt = (PreparedStatement) dao.getConection().prepareStatement(sql);
 		
-		ResultSet rs = stmt.executeQuery();
+		rs = stmt.executeQuery();
 		
 		while(rs.next()){
 			idsUnidadesEjecucion.add(rs.getInt("id_unidad_ejecucion"));
@@ -233,6 +248,18 @@ public class DaoWizard {
 			statement.executeUpdate();
 		}
 		
+		for(int i = 0; i < idsUnidadesEjecucionAntiguas.size(); i++){
+			
+			if(!idsUnidadesEjecucion.contains(idsUnidadesEjecucionAntiguas.get(i))){
+				//BORRAR TODAS LAS PARCELAS APORTADAS DE LA UD EJECUCION GETI
+			}
+			else{
+				//CHEQUEAR SI SE HA MODIFICADO EL NUMERO DE PARCELAS
+				
+				
+			}
+			
+		}
 		
 		
 		
@@ -259,9 +286,87 @@ public class DaoWizard {
 		
 	}
 	
+	//FIN PHASE 1
 	
+	//PHASE 2
 	
+	public Phase2 getPhase2(int idPlan) throws SQLException{
+		
+		String sql;
+		PreparedStatement statement;
+		ResultSet rs;
+		
+		
+		//Obtenemos el numero de unidades de ejecución que hay en un plan y la información de cada una de ellas.
+		sql = "SELECT id_unidad_ejecucion, denominacion, superficie_servidumbre, numero_parcelas_aportadas FROM unidad_ejecucion WHERE id_plan = " + idPlan;
+		
+		statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+		
+		rs = statement.executeQuery();
+		
+		HashMap<Integer, P2unidadEjecucion> map = new HashMap<Integer, P2unidadEjecucion>();
+		
+		while(rs.next()){
+			map.put(rs.getInt("id_unidad_ejecucion"), new P2unidadEjecucion((int)rs.getDouble("superficie_servidumbre"), rs.getInt("id_unidad_ejecucion"), rs.getInt("numero_parcelas_aportadas"), rs.getString("denominacion")));
+		}
+		
+		sql = "SELECT pa.id_parcela_aportada, pa.denominacion, pa.propietario, pa.superficie, pa.id_unidad_ejecucion, pa.dominio FROM parcela_aportada pa, unidad_ejecucion ue WHERE pa.id_unidad_ejecucion = ue.id_unidad_ejecucion AND ue.id_plan = " + idPlan;
+
+		statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+		
+		rs = statement.executeQuery();
+		
+		while(rs.next()){
+			map.get(rs.getInt("pa.id_unidad_ejecucion")).getParcelas().add(new ParcelaAportada(rs.getString("pa.denominacion"), rs.getString("pa.propietario"), rs.getString("pa.dominio"), rs.getInt("pa.id_unidad_ejecucion"), rs.getInt("pa.id_parcela_aportada"), (int)rs.getDouble("pa.superficie")));
+		}
+		
+		for (Entry<Integer, P2unidadEjecucion> entry : map.entrySet()) {
+			
+			P2unidadEjecucion ue = entry.getValue();
+			
+			while(ue.getNumeroParecelasAportadas() > ue.getParcelas().size()){
+				ue.getParcelas().add(new ParcelaAportada(ue.getDenominacion() + "PA" + (ue.getParcelas().size()+1), "", "", ue.getIdUnidadEjecucion(), 0));
+			}
+			
+			while(ue.getNumeroParecelasAportadas() < ue.getParcelas().size()){
+				ue.getParcelas().remove((ue.getParcelas().size()-1));
+			}
+
+		}
+		
+		Phase2 p = new Phase2(idPlan, map);
+		
+		return p;		
+	}
 	
+	public void updatePhase2(Phase2 p) throws SQLException{
+		
+		String sql;
+		PreparedStatement statement;
+		ResultSet rs;
+		
+		for(Entry <Integer, P2unidadEjecucion> entry : p.getMap().entrySet()){
+			
+			sql = "UPDATE unidad_ejecucion SET superficie_servidumbre = ? WHERE id_unidad_ejecucion = ?"; 
+			statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+			statement.setDouble(1, entry.getValue().getSuperficieServidumbre());		
+			statement.setInt(2, entry.getKey());
+			statement.execute();
+			
+			for(int i = 0; i < entry.getValue().getParcelas().size(); i++){
+				
+				sql = "UPDATE parcela_aportada SET superficie = ?, propietario = ?, dominio = ? WHERE id_parcela_aportada = ?";
+				statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+				statement.setDouble(1, entry.getValue().getParcelas().get(i).getSuperficie());		
+				statement.setString(2, entry.getValue().getParcelas().get(i).getPropietario());
+				statement.setString(3, entry.getValue().getParcelas().get(i).getDominio());
+				statement.setInt(4, entry.getValue().getParcelas().get(i).getIdParcelaAportada());
+				statement.execute();
+			}
+			
+		}
+		
+	}
 	
 	
 }

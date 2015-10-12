@@ -27,7 +27,6 @@ public abstract class CerrarFase {
 	abstract void update();
 	abstract ArrayList<String> checkPhase();
 	abstract Phase retrieveIncorrectPhaseObject();
-	abstract void attributeLoad(Phase p, ArrayList<String> msg, boolean isCorrect) throws SQLException;
 	abstract Phase getUpdateableIncorrectPhase();
 	abstract void updateIncorrectPhase(Phase p);
 	
@@ -73,4 +72,16 @@ public abstract class CerrarFase {
 			return false;
 		}
 	}
+
+	public void attributeLoad(Phase p, ArrayList<String> msg, boolean isCorrect) throws SQLException{
+		if(isCorrect){
+			request.setAttribute("id", request.getSession().getAttribute("idPlan"));
+		}
+		else{
+			request.setAttribute("id", p.getIdPlan());
+			request.setAttribute("msg", msg);
+			request.setAttribute("phase", p);
+		}
+	}
+
 }
