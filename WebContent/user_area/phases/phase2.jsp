@@ -73,7 +73,7 @@
 					</form>
 					<div class="content">
 						<% Phase2 p = (Phase2)request.getAttribute("phase2");%>
-	
+				
 						<h1>PARCELAS APORTADAS</h1>
 
 						<form method="POST" action="<%=Configuracion.getInstance().getRoot()%>user_area/check_phase" >
@@ -119,8 +119,8 @@
 																<option value="Privada">Privada</option>
 													  		<%}else{%>
 													  			<option value="Pública patrimonial">Pública patrimonial</option>
-																<option value="Pública de cesión" selected>Pública de cesión</option>
-																<option value="Privada">Privada</option>
+																<option value="Pública de cesión">Pública de cesión</option>
+																<option value="Privada" selected>Privada</option>
 													  			
 													  		<%}
 															} else{%>
@@ -142,7 +142,7 @@
 									<table>
 										<tr>
 											<th>M2 DE SUPERFICIE DE SUELO CON SERVIDUMBRES SECTORIALES</th>
-											<td><input name="<%=ue.getDenominacion() + ":servidumbre" %>" type="number" ></td>
+											<td><input name="<%=ue.getDenominacion() + ":servidumbre" %>" type="number" value="<%=ue.getSuperficieServidumbre() %>" ></td>
 										</tr>
 									</table>
 									<input name="<%=ue.getDenominacion() + ":idUe" %>" type="hidden" value="<%=ue.getIdUnidadEjecucion() %>">

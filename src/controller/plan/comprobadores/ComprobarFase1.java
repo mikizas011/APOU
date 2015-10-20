@@ -33,6 +33,7 @@ public class ComprobarFase1 extends CerrarFase{
 		try {
 			
 			dao.getWizard().updatePhase1(p);
+			
 			dao.getWizard().setPhaseCorrect(p.getIdPlan(), 1);
 			dao.close();
 

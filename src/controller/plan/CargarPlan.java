@@ -109,6 +109,7 @@ public class CargarPlan extends HttpServlet {
 					switch (fase) {
 						case 1:	phase1(request, response, dao, idPlan); break;
 						case 2:	phase2(request, response, dao, idPlan); break;
+						case 3: phase3(request, response, dao, idPlan); break;
 					}
 					
 				} catch (SQLException e) {
@@ -171,4 +172,25 @@ public class CargarPlan extends HttpServlet {
 		
 	}
 
+	public void phase3(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan) throws SQLException, ServletException, IOException{
+		
+		
+		
+		Phase2 p = null;
+		
+		if((ArrayList<String>) request.getAttribute("msg") != null){
+			p = (Phase2) request.getAttribute("phase");
+		}
+		else{
+			p = dao.getWizard().getPhase2(idPlan);
+		}
+		
+		dao.close();
+		
+		request.setAttribute("phase2", p);
+		
+		request.getRequestDispatcher("/user_area/phases/phase2.jsp").forward(request, response);
+		
+	}
+	
 }

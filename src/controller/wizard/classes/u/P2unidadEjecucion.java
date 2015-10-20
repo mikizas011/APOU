@@ -11,6 +11,20 @@ public class P2unidadEjecucion {
 	
 
 	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		
+		String a = "Denom = " + denominacion +" Sup Serv = " + superficieServidumbre + " idUE = " + idUnidadEjecucion + " numPA = " + numeroParecelasAportadas;
+		String b = "";
+		for(int i = 0; i < parcelas.size(); i++){
+			b += " parcela " + parcelas.get(i).getDenominacion() + " ue " + parcelas.get(i).getIdUnidadEjecucion();
+		}
+		
+		return a+b;
+
+		
+	}
 	public P2unidadEjecucion(int superficieServidumbre, int idUnidadEjecucion,
 			int numeroParecelasAportadas,
 			String denominacion) {

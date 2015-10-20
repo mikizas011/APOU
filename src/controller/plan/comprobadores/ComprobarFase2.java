@@ -57,14 +57,19 @@ public class ComprobarFase2 extends CerrarFase{
 
 			for(Entry <Integer, P2unidadEjecucion> entry : p.getMap().entrySet()){
 				
+				String a = entry.getValue().getDenominacion() + ":idUe";
+				String b = request.getParameter(a);
+				
+				//Hacemos el parseint para que coincida con la estructura int P2ue del hashmap
+				P2unidadEjecucion p2 = p.getMap().get(Integer.parseInt(b));
+				
+				
 				for(int i = 0; i < entry.getValue().getParcelas().size(); i++){
 					
-					String value = request.getParameter(entry.getValue().getDenominacion() + "PA" + (i+1));
+					String value = entry.getValue().getDenominacion() + "PA" + (i+1);
 					
-					p.getMap().get(
-							request.getParameter(
-									entry.getValue().getDenominacion() + ":idUe"))
-									.getParcelas().get(i).setDominio(
+					
+					p2.getParcelas().get(i).setDominio(
 											request.getParameter(
 													entry.getValue().
 													getParcelas().get(i).getDenominacion()+":dominio"));
@@ -73,19 +78,19 @@ public class ComprobarFase2 extends CerrarFase{
 						if(!cf.contains("Las superficies tienen que ser positivas.\n")){
 							cf.add("Las superficies tienen que ser positivas.\n");
 						}
-						p.getMap().get(request.getParameter(entry.getValue().getDenominacion() + ":idUe")).getParcelas().get(i).setSuperficie(0);
+						p2.getParcelas().get(i).setSuperficie(0);
 					}
 					else{
-						p.getMap().get(request.getParameter(entry.getValue().getDenominacion() + ":idUe")).getParcelas().get(i).setSuperficie(Double.parseDouble(request.getParameter(entry.getValue().getParcelas().get(i).getDenominacion()+":superficie")));
+						p2.getParcelas().get(i).setSuperficie(Double.parseDouble(request.getParameter(entry.getValue().getParcelas().get(i).getDenominacion()+":superficie")));
 					}
 					if( (isNull(request.getParameter(value + ":propietario"))) ){
 						if(!cf.contains("Los propietarios tienen que tener una denominación entre 1 y 100 caracteres.\n")){
 							cf.add("Los propietarios tienen que tener una denominación entre 1 y 100 caracteres.\n");
 						}
-						p.getMap().get(request.getParameter(entry.getValue().getDenominacion() + ":idUe")).getParcelas().get(i).setPropietario("");
+						p2.getParcelas().get(i).setPropietario("");
 					}
 					else{
-						p.getMap().get(request.getParameter(entry.getValue().getDenominacion() + ":idUe")).getParcelas().get(i).setDominio(request.getParameter(entry.getValue().getParcelas().get(i).getDenominacion()+":propietario"));
+						p2.getParcelas().get(i).setPropietario(request.getParameter(entry.getValue().getParcelas().get(i).getDenominacion()+":propietario"));
 					}
 					
 				}
@@ -94,10 +99,10 @@ public class ComprobarFase2 extends CerrarFase{
 					if(!cf.contains("Las superficies tienen que ser positivas.\n")){
 						cf.add("Las superficies tienen que ser positivas.\n");
 					}
-					p.getMap().get(request.getParameter(entry.getValue().getDenominacion() + ":idUe")).setSuperficieServidumbre(0);
+					p2.setSuperficieServidumbre(0);
 				}
 				else{
-					p.getMap().get(request.getParameter(entry.getValue().getDenominacion() + ":idUe")).setSuperficieServidumbre(Integer.parseInt(request.getParameter(entry.getValue().getDenominacion() + "servidumbre")));
+					p2.setSuperficieServidumbre(Integer.parseInt(request.getParameter(entry.getValue().getDenominacion() + ":servidumbre")));
 				}
 				
 			}
