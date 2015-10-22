@@ -1,6 +1,8 @@
-package controller.wizard.classes.u;
+package controller.wizard.classes;
 
 import java.util.ArrayList;
+
+//	Se utiliza en la fase 2
 
 public class P2unidadEjecucion {
 
@@ -78,6 +80,13 @@ public class P2unidadEjecucion {
 		this.denominacion = denominacion;
 	}
 	
+	public int getSuperficieParcelas(){
+		int sup = 0;
+		for(int i = 0; i < parcelas.size(); i++){
+			sup += parcelas.get(i).getSuperficie();
+		}
+		return sup;
+	}
 	
 	
 }

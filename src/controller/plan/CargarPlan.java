@@ -22,6 +22,7 @@ import controller.wizard.classes.Municipio;
 import controller.wizard.classes.Plan;
 import controller.wizard.classes.phases.Phase1;
 import controller.wizard.classes.phases.Phase2;
+import controller.wizard.classes.phases.Phase3;
 import model.Dao;
 
 /**
@@ -176,20 +177,20 @@ public class CargarPlan extends HttpServlet {
 		
 		
 		
-		Phase2 p = null;
+		Phase3 p = null;
 		
 		if((ArrayList<String>) request.getAttribute("msg") != null){
-			p = (Phase2) request.getAttribute("phase");
+			p = (Phase3) request.getAttribute("phase");
 		}
 		else{
-			p = dao.getWizard().getPhase2(idPlan);
+			p = dao.getWizard().getPhase3(idPlan);
 		}
 		
 		dao.close();
 		
-		request.setAttribute("phase2", p);
+		request.setAttribute("phase3", p);
 		
-		request.getRequestDispatcher("/user_area/phases/phase2.jsp").forward(request, response);
+		request.getRequestDispatcher("/user_area/phases/phase3.jsp").forward(request, response);
 		
 	}
 	

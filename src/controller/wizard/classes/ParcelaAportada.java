@@ -1,4 +1,4 @@
-package controller.wizard.classes.u;
+package controller.wizard.classes;
 
 public class ParcelaAportada {
 

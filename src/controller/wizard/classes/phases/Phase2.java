@@ -3,7 +3,7 @@ package controller.wizard.classes.phases;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import controller.wizard.classes.u.P2unidadEjecucion;
+import controller.wizard.classes.P2unidadEjecucion;
 
 public class Phase2 extends Phase{
 

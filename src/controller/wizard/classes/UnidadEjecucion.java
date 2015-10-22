@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import controller.wizard.classes.u.ParcelaAportada;
 import model.Dao;
 
 public class UnidadEjecucion {

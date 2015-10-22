@@ -10,12 +10,14 @@ import java.util.Map.Entry;
 
 import controller.Configuracion;
 import controller.wizard.classes.Municipio;
+import controller.wizard.classes.OrdenacionUrbanisticaEstructural;
+import controller.wizard.classes.P2unidadEjecucion;
+import controller.wizard.classes.ParcelaAportada;
 import controller.wizard.classes.Plan;
 import controller.wizard.classes.UnidadEjecucion;
 import controller.wizard.classes.phases.Phase1;
 import controller.wizard.classes.phases.Phase2;
-import controller.wizard.classes.u.P2unidadEjecucion;
-import controller.wizard.classes.u.ParcelaAportada;
+import controller.wizard.classes.phases.Phase3;
 import model.Dao;
 
 public class DaoWizard {
@@ -380,6 +382,98 @@ public class DaoWizard {
 		}
 		
 	}
+	
+	//FIN FASE 2
+	
+	//PHASE 3
+	
+		public Phase3 getPhase3(int idPlan) throws SQLException{
+			
+			String sql;
+			PreparedStatement statement;
+			ResultSet rs;
+			
+			
+			//Obtenemos todos los tipos de ordenacion urbanistica estructural (global) de un plan
+			sql = "SELECT id_tipo_ordenacion_global, denominacion, superficie FROM tipo_ordenacion_global WHERE id_plan = " + idPlan;
+			
+			statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+			
+			rs = statement.executeQuery();
+			
+			ArrayList<OrdenacionUrbanisticaEstructural> tipos = new ArrayList<OrdenacionUrbanisticaEstructural>();
+			while(rs.next()){
+				tipos.add(new OrdenacionUrbanisticaEstructural(rs.getInt("id_tipo_ordenacion_global"), rs.getString("denominacion"), (int)rs.getDouble("superficie")));
+			}
+			
+			int edifMaxSobreRasante = -1;
+			int edifMaxBajoRasante = -1;
+			
+			sql = "SELECT edif_max_sr, edif_max_br FROM plan WHERE id_plan = " + idPlan;
+
+			statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+			
+			rs = statement.executeQuery();
+			
+			if(rs.next()){
+				edifMaxBajoRasante = rs.getInt("edif_max_br");
+				edifMaxSobreRasante = rs.getInt("edif_max_sr");
+			}
+
+			Phase3 p = new Phase3(idPlan, tipos, edifMaxSobreRasante, edifMaxBajoRasante);
+			
+			return p;		
+		}
+		
+		public void updatePhase3(Phase3 p) throws SQLException{
+			
+			String sql;
+			PreparedStatement statement;
+			ResultSet rs;
+			
+			sql = "UPDATE plan SET edif_max_sr = ?, edif_max_br = ? WHERE id_plan = ?"; 
+			statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+			statement.setDouble(1, p.getEdifMaxSobreRasante());		
+			statement.setDouble(2, p.getEdifMaxBajoRasante());
+			statement.setInt(3, p.getIdPlan());
+			statement.execute();
+			
+			String notIn = "";
+			
+			for (Entry<Integer, OrdenacionUrbanisticaEstructural> entry : p.getUpdate().entrySet()) {
+				notIn += entry.getValue().getIdOrdenacionUrbanisticaEstructural() + ", ";
+				
+				sql = "UPDATE tipo_ordenacion_global SET denominacion = ?, superficie = ? WHERE id_tipo_ordenacion_global = ?"; 
+				statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+				statement.setString(1, entry.getValue().getNombre());		
+				statement.setDouble(2, entry.getValue().getSuperficie());
+				statement.setInt(3, entry.getValue().getIdOrdenacionUrbanisticaEstructural());
+				statement.execute();
+				
+			}
+			
+			if(notIn.length() > 2){
+				notIn = notIn.substring(0, notIn.length() -2);
+				sql = "DELETE FROM tipo_ordenacion_global WHERE id_tipo_ordenacion_global NOT IN ("+notIn+") AND id_plan = " + p.getIdPlan();
+				statement = dao.getConection().prepareStatement(sql);
+				statement.execute();
+			}
+			
+			for (Entry<String, OrdenacionUrbanisticaEstructural> entry : p.getInsert().entrySet()) {
+				
+				sql = "INSERT INTO tipo_ordenacion_global (denominacion, superficie, id_plan) values (?, ?, ?)";
+				statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+				statement.setString(1, entry.getValue().getNombre());		
+				statement.setDouble(2, entry.getValue().getSuperficie());
+				statement.setInt(3, p.getIdPlan());
+				statement.execute();
+				
+			}
+			
+			
+		}
+
+		//FIN FASE 3
 	
 	
 }

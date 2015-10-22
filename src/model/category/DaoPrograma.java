@@ -16,12 +16,12 @@ import com.mysql.jdbc.Statement;
 import controller.Configuracion;
 import controller.wizard.classes.EdificabilidadUnidadEjecucion;
 import controller.wizard.classes.Municipio;
+import controller.wizard.classes.ParcelaAportada;
 import controller.wizard.classes.ParcelaResultante;
 import controller.wizard.classes.Plan;
 import controller.wizard.classes.TipoOrdenacionEstructural;
 import controller.wizard.classes.TipoOrdenacionPormenorizada;
 import controller.wizard.classes.UnidadEjecucion;
-import controller.wizard.classes.u.ParcelaAportada;
 import model.Dao;
 
 public class DaoPrograma {

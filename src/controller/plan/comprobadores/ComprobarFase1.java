@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import model.Dao;
 import controller.errores.SQLError;
 import controller.wizard.classes.phases.Phase;
 import controller.wizard.classes.phases.Phase1;
@@ -23,24 +22,22 @@ public class ComprobarFase1 extends CerrarFase{
 		// TODO Auto-generated constructor stub
 	}
 
+	
 	@Override
-	void update() {
-
+	void updateIncorrectPhase(Phase p) {
 		
-		Phase1 p = new Phase1((Integer)request.getSession().getAttribute("idPlan"), request.getParameter("denominacion_plan"), request.getParameter("denominacion_sector"), request.getParameter("numero_sector").toString(), request.getParameter("municipio"), request.getParameter("idioma"), request.getParameter("superficie"), null);
-		p.setUes(ues);
+		Phase1 p1 = (Phase1) p;
 		
 		try {
 			
-			dao.getWizard().updatePhase1(p);
-			
-			dao.getWizard().setPhaseCorrect(p.getIdPlan(), 1);
+			dao.getWizard().updatePhase1(p1);
+			dao.getWizard().setPhaseIncorrect(p.getIdPlan(), 1);
 			dao.close();
 
 		} catch (SQLException e) {
 			new SQLError(request, response, e);
 		}
-
+		
 		
 	}
 
@@ -89,16 +86,27 @@ public class ComprobarFase1 extends CerrarFase{
 	}
 
 	@Override
-	Phase retrieveIncorrectPhaseObject() {
-		Phase1 p = new Phase1((Integer)request.getSession().getAttribute("idPlan"), request.getParameter("denominacion_plan"), request.getParameter("denominacion_sector"), request.getParameter("numero_sector"), request.getParameter("municipio"), request.getParameter("idioma"), request.getParameter("superficie"), null);
+	void update(Phase p) {
+		try {
+			dao.getWizard().updatePhase1((Phase1)p);
+			dao.getWizard().setPhaseCorrect(p.getIdPlan(), 1);
+			dao.close();
+		} catch (SQLException e) {
+			new SQLError(request, response, e);
+		}		
+	}
+
+	@Override
+	Phase loadedPhase() {
+		Phase1 p = new Phase1((Integer)request.getSession().getAttribute("idPlan"), request.getParameter("denominacion_plan"), request.getParameter("denominacion_sector"), request.getParameter("numero_sector").toString(), request.getParameter("municipio"), request.getParameter("idioma"), request.getParameter("superficie"), null);
 		p.setUes(ues);
 		return p;
 	}
 
 	@Override
-	Phase getUpdateableIncorrectPhase() {
-		Phase1 p = (Phase1) retrieveIncorrectPhaseObject();
-		
+	Phase correctedPhase() {
+		Phase1 p = new Phase1((Integer)request.getSession().getAttribute("idPlan"), request.getParameter("denominacion_plan"), request.getParameter("denominacion_sector"), request.getParameter("numero_sector"), request.getParameter("municipio"), request.getParameter("idioma"), request.getParameter("superficie"), null);
+
 		try{
 			if(!isPositive(p.getSuperficie())){
 				p.setSuperficie(""+Integer.parseInt(p.getSuperficie()));
@@ -119,23 +127,7 @@ public class ComprobarFase1 extends CerrarFase{
 		return p;
 	}
 
-	@Override
-	void updateIncorrectPhase(Phase p) {
-		
-		Phase1 p1 = (Phase1) p;
-		
-		try {
-			
-			dao.getWizard().updatePhase1(p1);
-			dao.getWizard().setPhaseIncorrect(p.getIdPlan(), 1);
-			dao.close();
 
-		} catch (SQLException e) {
-			new SQLError(request, response, e);
-		}
-		
-		
-	}
 
 
 }
