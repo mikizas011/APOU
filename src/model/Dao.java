@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import model.category.DaoLogin;
-import model.category.DaoPrograma;
+import model.category.DaoProgram;
 import model.category.DaoWizard;
 
 public class Dao {
@@ -17,13 +17,13 @@ public class Dao {
 	private String pass = "apouddbbpassword";
 	
 	private DaoLogin login;
-	private DaoPrograma programa;
 	private DaoWizard wizard;
+	private DaoProgram program;
 	
 	public Dao(){
 		login = new DaoLogin(this);
-		programa = new DaoPrograma(this);
 		wizard = new DaoWizard(this);
+		program = new DaoProgram(this);
 	}
 
 	public Connection getConection(){
@@ -46,13 +46,14 @@ public class Dao {
 	public DaoLogin getLogin(){
 		return this.login;
 	}
-	
-	public DaoPrograma getPrograma(){
-		return this.programa;
-	}
+
 	
 	public DaoWizard getWizard(){
 		return this.wizard;
+	}
+	
+	public DaoProgram getProgram(){
+		return this.program;
 	}
 	
 	public String getMessage(Exception e){

@@ -43,7 +43,7 @@ public class ContratarPlan extends HttpServlet {
 			try {
 				Dao dao = new Dao();
 
-				int id = dao.getPrograma().newPlan(request.getUserPrincipal().getName());
+				int id = dao.getProgram().newPlan(request.getUserPrincipal().getName());
 				
 				dao.getConection().close();
 				

@@ -1,3 +1,5 @@
+<%@page import="java.util.TreeSet"%>
+<%@page import="java.util.SortedSet"%>
 <%@page import="controller.wizard.classes.P2unidadEjecucion"%>
 <%@page import="controller.wizard.classes.phases.Phase2"%>
 <%@page import="java.util.Arrays"%>
@@ -79,9 +81,11 @@
 						<form method="POST" action="<%=Configuracion.getInstance().getRoot()%>user_area/check_phase" >
 								
 							<%
-							for (Entry<Integer, P2unidadEjecucion> entry : p.getMap().entrySet()) {
+
+							SortedSet<Integer> keys = new TreeSet<Integer>(p.getMap().keySet());
+							for(Integer key : keys){
+								P2unidadEjecucion ue = p.getMap().get(key);
 								
-								P2unidadEjecucion ue = entry.getValue();
 		
 								%>
 								

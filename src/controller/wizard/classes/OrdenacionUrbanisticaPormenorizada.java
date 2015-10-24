@@ -4,36 +4,24 @@ import java.sql.SQLException;
 
 import model.Dao;
 
-public class TipoOrdenacionPormenorizada {
+public class OrdenacionUrbanisticaPormenorizada {
 
-	private int idTipoOrdenacionPormenorizada, idPlan;
+	private int idOrdenacionPormenorizada, idPlan;
 	private String denominacion;
 	private double coefSRPB, coefSRPP, coefBR, edifBRPond, edifSRPBPond, edifSRPPPond;
 	
 	
 	
-	public TipoOrdenacionPormenorizada(String denominacion, double coefSRPB,
-			double coefSRPP, double coefBR) {
+	public OrdenacionUrbanisticaPormenorizada(String denominacion, double coefSRPB,
+			double coefSRPP, double coefBR, int idOrdenacionPormenorizada) {
 		super();
 		this.denominacion = denominacion;
 		this.coefSRPB = coefSRPB;
 		this.coefSRPP = coefSRPP;
 		this.coefBR = coefBR;
+		this.idOrdenacionPormenorizada = idOrdenacionPormenorizada;
 	}
-	
-	
-	
-	public TipoOrdenacionPormenorizada(int idTipoOrdenacionPormenorizada,
-			int idPlan, String denominacion, double coefSRPB, double coefSRPP,
-			double coefBR) {
-		super();
-		this.idTipoOrdenacionPormenorizada = idTipoOrdenacionPormenorizada;
-		this.idPlan = idPlan;
-		this.denominacion = denominacion;
-		this.coefSRPB = coefSRPB;
-		this.coefSRPP = coefSRPP;
-		this.coefBR = coefBR;
-	}
+
 
 
 
@@ -45,23 +33,15 @@ public class TipoOrdenacionPormenorizada {
 				+ (edifBRPond + edifSRPBPond + edifSRPPPond) + "]";
 	}
 	
-	
 
 
 
-	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		// TODO Auto-generated method stub
-		return new TipoOrdenacionPormenorizada(getIdTipoOrdenacionPormenorizada(), getIdPlan(), getDenominacion(), getCoefSRPB(), getCoefSRPP(), getCoefBR());
+
+	public int getIdOrdenacionPormenorizada() {
+		return idOrdenacionPormenorizada;
 	}
-
-
-
-	public int getIdTipoOrdenacionPormenorizada() {
-		return idTipoOrdenacionPormenorizada;
-	}
-	public void setIdTipoOrdenacionPormenorizada(int idTipoOrdenacionPormenorizada) {
-		this.idTipoOrdenacionPormenorizada = idTipoOrdenacionPormenorizada;
+	public void setIdOrdenacionPormenorizada(int idTipoOrdenacionPormenorizada) {
+		this.idOrdenacionPormenorizada = idTipoOrdenacionPormenorizada;
 	}
 	public int getIdPlan() {
 		return idPlan;
