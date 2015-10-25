@@ -45,6 +45,8 @@ public abstract class CerrarFase {
 		
 		attributeLoad(p, msg);
 		
+		dao.close();
+		
 		request.getRequestDispatcher("/user_area/load_plan").forward(request, response);
 		
 	}

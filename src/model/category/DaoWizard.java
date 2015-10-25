@@ -238,18 +238,17 @@ public class DaoWizard {
 				
 		//Renombramiento de las unidades de ejecución para ordenarlas
 		
-		sql = "SELECT id_unidad_ejecucion, numero_parcelas_aportadas FROM unidad_ejecucion WHERE id_plan = " + p.getIdPlan();
+		sql = "SELECT id_unidad_ejecucion, numero_parcelas_aportadas, denominacion FROM unidad_ejecucion WHERE id_plan = " + p.getIdPlan();
 
-		ArrayList<Integer> idsUnidadesEjecucion = new ArrayList<Integer>();
-		ArrayList<Integer> numParcelas = new ArrayList<Integer>();
-		
+		HashMap<String, UnidadEjecucion> ues = new HashMap<String, UnidadEjecucion>();
+ 		
 		stmt = (PreparedStatement) dao.getConection().prepareStatement(sql);
 		
 		rs = stmt.executeQuery();
 		
 		while(rs.next()){
-			idsUnidadesEjecucion.add(rs.getInt("id_unidad_ejecucion"));
-			numParcelas.add(rs.getInt("numero_parcelas_aportadas"));
+
+			ues.put(rs.getString("denominacion"), new UnidadEjecucion(rs.getInt("id_unidad_ejecucion"), rs.getInt("numero_parcelas_aportadas"), rs.getString("denominacion")));
 		}
 		
 		sql = "SELECT id_dominio FROM dominio";
@@ -259,29 +258,63 @@ public class DaoWizard {
 		if(rs.next()){
 			dominioAux = rs.getInt(1);
 		}
-		
-		for(int i = 0; i < idsUnidadesEjecucion.size(); i++){
-			sql = "UPDATE unidad_ejecucion set denominacion = 'UE" + (i+1) + "' WHERE id_unidad_ejecucion = " + idsUnidadesEjecucion.get(i);  
-			statement = dao.getConection().prepareStatement(sql);
-			statement.executeUpdate();
-			sql = "DELETE from parcela_aportada where id_unidad_ejecucion = " + idsUnidadesEjecucion.get(i);
-			statement = dao.getConection().prepareStatement(sql);
-			statement.executeUpdate();
-		
-			for(int e = 0; e < numParcelas.get(i); e++){
 
-				sql = "INSERT INTO parcela_aportada (denominacion, id_unidad_ejecucion, id_dominio) values (?, ?, ?)";
+		for (Entry<String, String> entry : p.getUes().entrySet()) {
+			
+			sql = "SELECT count(*) FROM parcela_aportada WHERE id_unidad_ejecucion = " + ues.get(entry.getKey()).getIdUnidadEjecucion();
+
+			statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+			rs = statement.executeQuery();
+			
+			if(rs.next()){
+				int numeroParcelasAportadas = rs.getInt("count(*)");
+			
+				if(numeroParcelasAportadas > Integer.parseInt(entry.getValue())){
+					//Si antes había más parcelas que ahora, tenemos que borrar parcelas de la base de datos.
+					int parcelasABorrar = numeroParcelasAportadas - Integer.parseInt(entry.getValue());
+					
+					String in = "";
+					
+					for(int i = 0; i < parcelasABorrar; i++){
+						in += "'"+ues.get(entry.getKey()).getDenominacion() + "PA" + (numeroParcelasAportadas - i) + "', ";
+					}
+					
+					in = in.substring(0, in.length() -2);
+					
+					sql = "DELETE FROM parcela_aportada WHERE denominacion IN ("+in+") AND id_unidad_ejecucion = " + ues.get(entry.getKey()).getIdUnidadEjecucion();
+
+					statement = dao.getConection().prepareStatement(sql);
+
+					statement.execute();
+					
+				}
+				else if(numeroParcelasAportadas < Integer.parseInt(entry.getValue())){
+					//Si antes había menos parcelas que ahora, tenemos que insertar parcelas en la base de datos. 
+					int parcelasAInsertar = Integer.parseInt(entry.getValue()) - numeroParcelasAportadas;
+
+					for(int i = 1; i < parcelasAInsertar+1; i++){
+						sql = "INSERT INTO parcela_aportada (denominacion, id_unidad_ejecucion, id_dominio) values (?, ?, ?)";
+						statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+						statement.setString(1, ues.get(entry.getKey()).getDenominacion() + "PA" + (numeroParcelasAportadas + i));		
+						statement.setInt(2, ues.get(entry.getKey()).getIdUnidadEjecucion());
+						statement.setInt(3,  dominioAux);
+						statement.execute();
+					}
+						
+				}
 				
-				statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
-				
-				statement.setString(1, "UE" + (i+1) + "PA" + (e+1));
-				statement.setInt(2, idsUnidadesEjecucion.get(i));
-				statement.setInt(3, dominioAux);
-				statement.execute();
 			}
-		
-		
 		}
+
+		
+//FALTA EL RENOMBRAMIENTO
+
+		
+//		for(int i = 0; i < idsUnidadesEjecucion.size(); i++){
+//			sql = "UPDATE unidad_ejecucion set denominacion = 'UE" + (i+1) + "' WHERE id_unidad_ejecucion = " + idsUnidadesEjecucion.get(i);  
+//			statement = dao.getConection().prepareStatement(sql);
+//			statement.executeUpdate();
+//		}
 
 		
 		
@@ -303,8 +336,6 @@ public class DaoWizard {
 		while(rs.next()){
 			municipios.add(new Municipio(rs.getString("municipio")));
 		}
-		
-		dao.getConection().close();
 		
 		return municipios;
 		

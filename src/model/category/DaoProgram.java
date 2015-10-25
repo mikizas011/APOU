@@ -63,8 +63,6 @@ public class DaoProgram {
 		    rs.next();
 		    int id = rs.getInt(1);
 		    
-			dao.getConection().close();
-				
 			return id;
 			
 			

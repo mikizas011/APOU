@@ -49,7 +49,7 @@ public class ContratarPlan extends HttpServlet {
 				
 				request.setAttribute("id", id);
 				
-				
+				dao.close();
 				
 				request.getRequestDispatcher("/user_area/load_plan").forward(request, response);
 				

@@ -20,6 +20,8 @@ public class Dao {
 	private DaoWizard wizard;
 	private DaoProgram program;
 	
+	private Connection con;
+	
 	public Dao(){
 		login = new DaoLogin(this);
 		wizard = new DaoWizard(this);
@@ -27,10 +29,15 @@ public class Dao {
 	}
 
 	public Connection getConection(){
-		
+
 		try{
-			Class.forName("org.gjt.mm.mysql.Driver");
-			return DriverManager.getConnection("jdbc:mysql://"+server+":"+port+"/"+database, userName, pass);	
+			if(con == null){
+				Class.forName("org.gjt.mm.mysql.Driver");
+				con = DriverManager.getConnection("jdbc:mysql://"+server+":"+port+"/"+database, userName, pass);
+			}
+			
+			return con;
+				
 		}
 		catch (ClassNotFoundException e) {
 			System.err.print("modelo - Dao - getConnection: " + e.getMessage());

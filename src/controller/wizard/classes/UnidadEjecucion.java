@@ -25,10 +25,11 @@ public class UnidadEjecucion {
 		this.idUnidadEjecucion = idUnidadEjecucion;
 	}
 	
-	public UnidadEjecucion(int numeroParcelasAportadas, String denominacion) {
+	public UnidadEjecucion(int idUnidadEjecucion, int numeroParcelasAportadas, String denominacion) {
 		super();
 		this.numeroParcelasAportadas = numeroParcelasAportadas;
 		this.denominacion = denominacion;
+		this.idUnidadEjecucion = idUnidadEjecucion;
 		parcelasAportadas = new ArrayList<ParcelaAportada>();
 		parcelasResultantes = new ArrayList<ParcelaResultante>();
 	}

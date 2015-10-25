@@ -48,6 +48,8 @@ public class CargarPlanes extends HttpServlet {
 				}
 			}
 			
+			dao.close();
+			
 			sesion.setAttribute("planes", planes);
 			
 			request.getRequestDispatcher("/user_area/plans.jsp").forward(request, response);

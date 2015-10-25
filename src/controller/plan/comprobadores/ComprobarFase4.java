@@ -72,9 +72,6 @@ public class ComprobarFase4 extends CerrarFase{
 			cf.add("Las unidades de ejecución tienen que tener como mínimo una parcela resultante.");
 		}
 		
-		cf.add("Falta segunda mitad");
-		
-		
 		return cf;
 	}
 
