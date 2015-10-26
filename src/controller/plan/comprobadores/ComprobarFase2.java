@@ -83,7 +83,6 @@ public class ComprobarFase2 extends CerrarFase{
 			
 			dao.getWizard().updatePhase2((Phase2) p);
 			dao.getWizard().setPhaseIncorrect(p.getIdPlan(), 2);
-			dao.close();
 
 		} catch (SQLException e) {
 			new SQLError(request, response, e);
@@ -98,7 +97,6 @@ public class ComprobarFase2 extends CerrarFase{
 			
 			dao.getWizard().updatePhase2((Phase2) p);
 			dao.getWizard().setPhaseCorrect(p.getIdPlan(), 2);
-			dao.close();
 
 		} catch (SQLException e) {
 			new SQLError(request, response, e);

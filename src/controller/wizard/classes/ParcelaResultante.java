@@ -3,7 +3,7 @@ package controller.wizard.classes;
 public class ParcelaResultante {
 
 	private int idParcelaResultante, idTipoOrdenacionPormenorizada, idUnidadEjecucion;
-	private String denominacion;
+	private String denominacion, tipoOrdenacionPormenorizada;
 	private double superficie, obrA, obrN, osrA, osrN, ebrA, ebrN, esrpbA, esrpbN, esrppA, esrppN, porcentajeAyuntamiento;
 	
 	
@@ -30,7 +30,30 @@ public class ParcelaResultante {
 		this.esrppA = esrppA;
 		this.esrppN = esrppN;
 	}
-	
+
+	public ParcelaResultante(int idParcelaResultante,
+			int idTipoOrdenacionPormenorizada, int idUnidadEjecucion,
+			String denominacion, double superficie, double obrA, double obrN,
+			double osrA, double osrN, double ebrA, double ebrN, double esrpbA,
+			double esrpbN, double esrppA, double esrppN, String tipoOrdenacionPormenorizada) {
+		super();
+		this.idParcelaResultante = idParcelaResultante;
+		this.idTipoOrdenacionPormenorizada = idTipoOrdenacionPormenorizada;
+		this.idUnidadEjecucion = idUnidadEjecucion;
+		this.denominacion = denominacion;
+		this.superficie = superficie;
+		this.obrA = obrA;
+		this.obrN = obrN;
+		this.osrA = osrA;
+		this.osrN = osrN;
+		this.ebrA = ebrA;
+		this.ebrN = ebrN;
+		this.esrpbA = esrpbA;
+		this.esrpbN = esrpbN;
+		this.esrppA = esrppA;
+		this.esrppN = esrppN;
+		this.tipoOrdenacionPormenorizada = tipoOrdenacionPormenorizada;
+	}
 	
 	public ParcelaResultante(int idParcelaResultante,
 			int idTipoOrdenacionPormenorizada, int idUnidadEjecucion,
@@ -158,6 +181,16 @@ public class ParcelaResultante {
 	}
 	public void setPorcentajeAyuntamiento(double porcentajeAyuntamiento) {
 		this.porcentajeAyuntamiento = porcentajeAyuntamiento;
+	}
+
+
+	public String getTipoOrdenacionPormenorizada() {
+		return tipoOrdenacionPormenorizada;
+	}
+
+
+	public void setTipoOrdenacionPormenorizada(String tipoOrdenacionPormenorizada) {
+		this.tipoOrdenacionPormenorizada = tipoOrdenacionPormenorizada;
 	}
 	
 	

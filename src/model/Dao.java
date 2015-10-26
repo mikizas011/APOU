@@ -78,6 +78,7 @@ public class Dao {
 	public void close(){
 		try {
 			this.getConection().close();
+			this.con = null;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

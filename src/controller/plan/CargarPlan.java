@@ -24,6 +24,7 @@ import controller.wizard.classes.phases.Phase1;
 import controller.wizard.classes.phases.Phase2;
 import controller.wizard.classes.phases.Phase3;
 import controller.wizard.classes.phases.Phase4;
+import controller.wizard.classes.phases.Phase5;
 import model.Dao;
 
 /**
@@ -113,6 +114,7 @@ public class CargarPlan extends HttpServlet {
 						case 2:	phase2(request, response, dao, idPlan); break;
 						case 3: phase3(request, response, dao, idPlan); break;
 						case 4: phase4(request, response, dao, idPlan); break;
+						case 5: phase5(request, response, dao, idPlan); break;
 					}
 					
 				} catch (SQLException e) {
@@ -145,6 +147,7 @@ public class CargarPlan extends HttpServlet {
 		}
 		
 		dao.close();
+		dao = null;
 		
 		
 		request.setAttribute("municipios", municipios);
@@ -168,6 +171,7 @@ public class CargarPlan extends HttpServlet {
 		}
 		
 		dao.close();
+		dao = null;
 		
 		request.setAttribute("phase2", p);
 		
@@ -189,6 +193,7 @@ public class CargarPlan extends HttpServlet {
 		}
 		
 		dao.close();
+		dao = null;
 		
 		request.setAttribute("phase3", p);
 		
@@ -210,6 +215,7 @@ public class CargarPlan extends HttpServlet {
 		}
 		
 		dao.close();
+		dao = null;
 		
 		request.setAttribute("phase4", p);
 		
@@ -217,4 +223,25 @@ public class CargarPlan extends HttpServlet {
 		
 	}
 	
+	public void phase5(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan) throws SQLException, ServletException, IOException{
+		
+		
+		
+		Phase5 p = null;
+		
+		if((ArrayList<String>) request.getAttribute("msg") != null){
+			p = (Phase5) request.getAttribute("phase");
+		}
+		else{
+			p = dao.getWizard().getPhase5(idPlan);
+		}
+		
+		dao.close();
+		dao = null;
+		
+		request.setAttribute("phase5", p);
+		
+		request.getRequestDispatcher("/user_area/phases/phase5.jsp").forward(request, response);
+		
+	}
 }

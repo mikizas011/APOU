@@ -49,6 +49,7 @@ public class CargarPlanes extends HttpServlet {
 			}
 			
 			dao.close();
+			dao = null;
 			
 			sesion.setAttribute("planes", planes);
 			

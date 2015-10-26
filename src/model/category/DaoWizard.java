@@ -13,13 +13,16 @@ import controller.wizard.classes.Municipio;
 import controller.wizard.classes.OrdenacionUrbanisticaEstructural;
 import controller.wizard.classes.OrdenacionUrbanisticaPormenorizada;
 import controller.wizard.classes.P2unidadEjecucion;
+import controller.wizard.classes.P5UnidadEjecucion;
 import controller.wizard.classes.ParcelaAportada;
+import controller.wizard.classes.ParcelaResultante;
 import controller.wizard.classes.Plan;
 import controller.wizard.classes.UnidadEjecucion;
 import controller.wizard.classes.phases.Phase1;
 import controller.wizard.classes.phases.Phase2;
 import controller.wizard.classes.phases.Phase3;
 import controller.wizard.classes.phases.Phase4;
+import controller.wizard.classes.phases.Phase5;
 import model.Dao;
 
 public class DaoWizard {
@@ -650,4 +653,59 @@ public class DaoWizard {
 		
 		//FIN FASE 4
 	
+		//FASE 5
+		
+		public Phase5 getPhase5(int idPlan) throws SQLException{
+			
+			String sql;
+			PreparedStatement statement;
+			ResultSet rs;
+			
+			
+			//Obtenemos el numero de unidades de ejecución que hay en un plan y la información de cada una de ellas.
+			sql = "SELECT id_unidad_ejecucion, denominacion FROM unidad_ejecucion WHERE id_plan = " + idPlan;
+			
+			statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+			
+			rs = statement.executeQuery();
+			
+			HashMap<Integer, P5UnidadEjecucion> map = new HashMap<Integer, P5UnidadEjecucion>();
+			
+			while(rs.next()){
+				map.put(rs.getInt("id_unidad_ejecucion"), new P5UnidadEjecucion(rs.getString("denominacion"), rs.getInt("id_unidad_ejecucion"), idPlan));
+			}
+			
+			//Obtenemos los tipos de ordenacion pormenorizados
+			sql = "SELECT id_tipo_ordenacion_pormenorizada, denominacion FROM tipo_ordenacion_pormenorizada WHERE id_plan = " + idPlan;
+			
+			statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+			
+			rs = statement.executeQuery();
+			
+			HashMap<String, Integer> tipos = new HashMap<String, Integer>();
+			
+			while(rs.next()){
+				tipos.put(rs.getString("denominacion"), rs.getInt("id_tipo_ordenacion_pormenorizada"));
+			}
+			
+			//Obtenemos las parcelas resultantes
+			sql = "SELECT pr.id_unidad_ejecucion, pr.id_parcela_resultante, pr.denominacion, pr.superficie, pr.obr_a, pr.obr_n, pr.osr_a, pr.osr_n, pr.ebr_a, pr.ebr_n, pr.esrpb_a, pr.esrpb_n, pr.esrpp_a, pr.esrpp_n, pr.id_tipo_ordenacion_pormenorizada FROM parcela_resultante pr, unidad_ejecucion ue WHERE ue.id_unidad_ejecucion = pr.id_unidad_ejecucion AND ue.id_plan = " + idPlan;
+			
+			statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+			
+			rs = statement.executeQuery();
+			
+			while(rs.next()){
+				map.get(rs.getInt("pr.id_unidad_ejecucion")).getParcelas().put(rs.getInt("pr.id_parcela_resultante"), new ParcelaResultante(rs.getInt("pr.id_parcela_resultante"), rs.getInt("pr.id_tipo_ordenacion_pormenorizada"), rs.getInt("pr.id_unidad_ejecucion"), rs.getString("pr.denominacion"), rs.getDouble("superficie"), rs.getDouble("obr_a"), rs.getDouble("obr_n"), rs.getDouble("osr_a"), rs.getDouble("osr_n"), rs.getDouble("ebr_a"), rs.getDouble("ebr_n"), rs.getDouble("esrpb_a"), rs.getDouble("esrpb_n"), rs.getDouble("esrpp_a"), rs.getDouble("esrpp_n"), tipos.get(rs.getInt("pr.id_tipo_ordenacion_pormenorizada"))));
+			}
+			
+			Phase5 p = new Phase5(idPlan, map, tipos);
+			
+			
+			return p;		
+		}
+
+		
+		//FIN FASE 5
+		
 }
