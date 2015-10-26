@@ -73,10 +73,11 @@ public class CargarPlan extends HttpServlet {
 				int fase;
 				int difFase = 0;
 				
+				
 				try {
-					
+					int faseActual = dao.getWizard().getFase(idPlan);
 					if(request.getParameter("fase") == null){
-						fase = dao.getWizard().getFase(idPlan);
+						fase = faseActual;
 					}
 					else{
 						difFase = dao.getWizard().getFase(idPlan);
@@ -110,11 +111,11 @@ public class CargarPlan extends HttpServlet {
 					request.setAttribute("estadoFase", estadoFase);
 					
 					switch (fase) {
-						case 1:	phase1(request, response, dao, idPlan); break;
-						case 2:	phase2(request, response, dao, idPlan); break;
-						case 3: phase3(request, response, dao, idPlan); break;
-						case 4: phase4(request, response, dao, idPlan); break;
-						case 5: phase5(request, response, dao, idPlan); break;
+						case 1:	phase1(request, response, dao, idPlan, faseActual); break;
+						case 2:	phase2(request, response, dao, idPlan, faseActual); break;
+						case 3: phase3(request, response, dao, idPlan, faseActual); break;
+						case 4: phase4(request, response, dao, idPlan, faseActual); break;
+						case 5: phase5(request, response, dao, idPlan, faseActual); break;
 					}
 					
 				} catch (SQLException e) {
@@ -127,7 +128,7 @@ public class CargarPlan extends HttpServlet {
 	
 	}
 	
-	public void phase1(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan) throws SQLException, ServletException, IOException{
+	public void phase1(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan, int faseActual) throws SQLException, ServletException, IOException{
 		
 		//Cargamos los municipios disponibles, y la información referente a la fase 1
 		ArrayList<Municipio> municipios = dao.getWizard().getMunicipios();
@@ -141,6 +142,7 @@ public class CargarPlan extends HttpServlet {
 			p = dao.getWizard().getPhase1(idPlan);
 		}
 		
+		p.setFase(faseActual);
 		
 		if(p.getDenominacionPlan() == null){
 			p.setDenominacionPlan("P: " + new Date());
@@ -157,7 +159,7 @@ public class CargarPlan extends HttpServlet {
 		
 	}
 	
-	public void phase2(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan) throws SQLException, ServletException, IOException{
+	public void phase2(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan, int faseActual) throws SQLException, ServletException, IOException{
 		
 		
 		
@@ -170,6 +172,9 @@ public class CargarPlan extends HttpServlet {
 			p = dao.getWizard().getPhase2(idPlan);
 		}
 		
+		p.setFase(faseActual);
+
+		
 		dao.close();
 		dao = null;
 		
@@ -179,7 +184,7 @@ public class CargarPlan extends HttpServlet {
 		
 	}
 
-	public void phase3(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan) throws SQLException, ServletException, IOException{
+	public void phase3(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan, int faseActual) throws SQLException, ServletException, IOException{
 		
 		
 		
@@ -192,6 +197,9 @@ public class CargarPlan extends HttpServlet {
 			p = dao.getWizard().getPhase3(idPlan);
 		}
 		
+		p.setFase(faseActual);
+
+		
 		dao.close();
 		dao = null;
 		
@@ -201,7 +209,7 @@ public class CargarPlan extends HttpServlet {
 		
 	}
 	
-	public void phase4(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan) throws SQLException, ServletException, IOException{
+	public void phase4(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan, int faseActual) throws SQLException, ServletException, IOException{
 		
 		
 		
@@ -214,6 +222,9 @@ public class CargarPlan extends HttpServlet {
 			p = dao.getWizard().getPhase4(idPlan);
 		}
 		
+		p.setFase(faseActual);
+
+		
 		dao.close();
 		dao = null;
 		
@@ -223,7 +234,7 @@ public class CargarPlan extends HttpServlet {
 		
 	}
 	
-	public void phase5(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan) throws SQLException, ServletException, IOException{
+	public void phase5(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan, int faseActual) throws SQLException, ServletException, IOException{
 		
 		
 		
@@ -235,6 +246,9 @@ public class CargarPlan extends HttpServlet {
 		else{
 			p = dao.getWizard().getPhase5(idPlan);
 		}
+		
+		p.setFase(faseActual);
+
 		
 		dao.close();
 		dao = null;

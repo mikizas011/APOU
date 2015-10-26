@@ -52,13 +52,33 @@ public abstract class CerrarFase {
 		
 	}
 	
-	
+	public String checkNull(String s){
+		if(s.equals("") || s.toUpperCase().equals("NULL")){
+			return "";
+		}
+		return s;
+	}
 	
 	public boolean isNull(String s){
 		if(s.equals("") || s.toUpperCase().equals("NULL")){
 			return true;
 		}
 		return false;
+	}
+	
+	public double checkPositive(String s){
+		try{
+			if(isNull(s)){
+				return 0.0;
+			}
+			else if((Double) Double.parseDouble(s) <= 0){
+				return 0.0;
+			}
+			return (Double) Double.parseDouble(s);
+		}
+		catch(NumberFormatException e){
+			return 0.0;
+		}
 	}
 	
 	public boolean isPositive(String s){

@@ -72,6 +72,7 @@ public class DaoWizard {
 				case 2: sql = "fase_2_correct = 1, fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
 				case 3: sql = "fase_3_correct = 1, fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
 				case 4: sql = "fase_4_correct = 1, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
+				case 5: sql = "fase_5_correct = 1, fase_6_correct = 1, fase_7_correct = 0, fase_8_correct = 0"; break;
 			}
 			
 			sql = "UPDATE plan SET " + sql + ", fase = ? WHERE id_plan = " + plan;
@@ -93,6 +94,7 @@ public class DaoWizard {
 				case 2: sql = "fase_2_correct = 0, fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
 				case 3: sql = "fase_3_correct = 0, fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
 				case 4: sql = "fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
+				case 5: sql = "fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
 			}
 			
 			sql = "UPDATE plan SET " + sql + ", fase = ? WHERE id_plan = " + plan;
@@ -682,10 +684,10 @@ public class DaoWizard {
 			
 			rs = statement.executeQuery();
 			
-			HashMap<String, Integer> tipos = new HashMap<String, Integer>();
+			HashMap<Integer, String> tipos = new HashMap<Integer, String>();
 			
 			while(rs.next()){
-				tipos.put(rs.getString("denominacion"), rs.getInt("id_tipo_ordenacion_pormenorizada"));
+				tipos.put(rs.getInt("id_tipo_ordenacion_pormenorizada"), rs.getString("denominacion"));
 			}
 			
 			//Obtenemos las parcelas resultantes
@@ -705,6 +707,40 @@ public class DaoWizard {
 			return p;		
 		}
 
+		public void updatePhase5(Phase5 p) throws SQLException{
+			
+			String sql;
+			PreparedStatement statement;
+			ResultSet rs;
+			
+			for(Entry <Integer, P5UnidadEjecucion> entry : p.getMap().entrySet()){
+				
+				for(Entry <Integer, ParcelaResultante> pr : entry.getValue().getParcelas().entrySet()){
+
+					sql = "UPDATE parcela_resultante SET id_tipo_ordenacion_pormenorizada = ?, superficie = ?, obr_a = ?, obr_n = ?, osr_a = ?, osr_n = ?, ebr_a = ?, ebr_n = ?, esrpb_a = ?, esrpb_n = ?, esrpp_a = ?, esrpp_n = ? WHERE id_parcela_resultante = ?";
+					statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+					statement.setInt(1, pr.getValue().getIdTipoOrdenacionPormenorizada());		
+					statement.setDouble(2, pr.getValue().getSuperficie());
+					statement.setDouble(3, pr.getValue().getObrA());
+					statement.setDouble(4, pr.getValue().getObrN());
+					statement.setDouble(5, pr.getValue().getOsrA());
+					statement.setDouble(6, pr.getValue().getOsrN());
+					statement.setDouble(7, pr.getValue().getEbrA());
+					statement.setDouble(8, pr.getValue().getEbrN());
+					statement.setDouble(9, pr.getValue().getEsrpbA());
+					statement.setDouble(10, pr.getValue().getEsrpbN());
+					statement.setDouble(11, pr.getValue().getEsrppA());
+					statement.setDouble(12, pr.getValue().getEsrppN());
+					statement.setInt(13, pr.getValue().getIdParcelaResultante());
+					statement.execute();
+					
+				}
+
+			
+				
+			}
+			
+		}
 		
 		//FIN FASE 5
 		

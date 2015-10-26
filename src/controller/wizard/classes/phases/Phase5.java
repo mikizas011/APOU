@@ -7,9 +7,9 @@ import controller.wizard.classes.P5UnidadEjecucion;
 public class Phase5 extends Phase{
 
 	private HashMap<Integer, P5UnidadEjecucion> map;
-	private HashMap<String, Integer> tipos;
+	private HashMap<Integer, String> tipos;
 	
-	public Phase5(int idPlan, HashMap<Integer, P5UnidadEjecucion> map, HashMap<String, Integer> tipos) {
+	public Phase5(int idPlan, HashMap<Integer, P5UnidadEjecucion> map, HashMap<Integer, String> tipos) {
 		super(idPlan);
 		this.setMap(map);
 		this.setTipos(tipos);
@@ -23,11 +23,11 @@ public class Phase5 extends Phase{
 		this.map = map;
 	}
 
-	public HashMap<String, Integer> getTipos() {
+	public HashMap<Integer, String> getTipos() {
 		return tipos;
 	}
 
-	public void setTipos(HashMap<String, Integer> tipos) {
+	public void setTipos(HashMap<Integer, String> tipos) {
 		this.tipos = tipos;
 	}
 
