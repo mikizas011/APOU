@@ -1,36 +1,25 @@
-package controller.wizard.classes.u;
+package controller.wizard.classes;
 
 public class ParcelaAportada {
 
 	private String denominacion, propietario, dominio;
-	private int idUnidadEjecucion, idParcelaAportada;
+	private int idUnidadEjecucion, idParcelaAportada, idDominio;
 	private double superficie;
 	
 	
 	
-	public ParcelaAportada(String denominacion, String propietario,
-			String dominio, int idUnidadEjecucion, double superficie) {
+	public ParcelaAportada(int idParcelaAportada, String denominacion, String propietario,
+			String dominio, int idUnidadEjecucion, double superficie, int idDominio) {
 		super();
 		this.denominacion = denominacion;
 		this.propietario = propietario;
 		this.setDominio(dominio);
 		this.idUnidadEjecucion = idUnidadEjecucion;
 		this.superficie = superficie;
-	}
-	
-	
-	
-	public ParcelaAportada(String denominacion, String propietario,
-			String dominio, int idUnidadEjecucion, int idParcelaAportada,
-			double superficie) {
-		super();
-		this.denominacion = denominacion;
-		this.propietario = propietario;
-		this.setDominio(dominio);
-		this.idUnidadEjecucion = idUnidadEjecucion;
+		this.idDominio = idDominio;
 		this.idParcelaAportada = idParcelaAportada;
-		this.superficie = superficie;
 	}
+
 
 
 
@@ -83,6 +72,18 @@ public class ParcelaAportada {
 
 	public void setDominio(String dominio) {
 		this.dominio = dominio;
+	}
+
+
+
+	public int getIdDominio() {
+		return idDominio;
+	}
+
+
+
+	public void setIdDominio(int idDominio) {
+		this.idDominio = idDominio;
 	}
 	
 }

@@ -10,12 +10,16 @@ import java.util.Map.Entry;
 
 import controller.Configuracion;
 import controller.wizard.classes.Municipio;
+import controller.wizard.classes.OrdenacionUrbanisticaEstructural;
+import controller.wizard.classes.OrdenacionUrbanisticaPormenorizada;
+import controller.wizard.classes.P2unidadEjecucion;
+import controller.wizard.classes.ParcelaAportada;
 import controller.wizard.classes.Plan;
 import controller.wizard.classes.UnidadEjecucion;
 import controller.wizard.classes.phases.Phase1;
 import controller.wizard.classes.phases.Phase2;
-import controller.wizard.classes.u.P2unidadEjecucion;
-import controller.wizard.classes.u.ParcelaAportada;
+import controller.wizard.classes.phases.Phase3;
+import controller.wizard.classes.phases.Phase4;
 import model.Dao;
 
 public class DaoWizard {
@@ -123,6 +127,10 @@ public class DaoWizard {
 			
 			return fases;
 		}
+		
+
+		
+		
 	
 	
 	//PHASE 1
@@ -230,36 +238,85 @@ public class DaoWizard {
 				
 		//Renombramiento de las unidades de ejecución para ordenarlas
 		
-		sql = "SELECT id_unidad_ejecucion FROM unidad_ejecucion WHERE id_plan = " + p.getIdPlan();
+		sql = "SELECT id_unidad_ejecucion, numero_parcelas_aportadas, denominacion FROM unidad_ejecucion WHERE id_plan = " + p.getIdPlan();
 
-		ArrayList<Integer> idsUnidadesEjecucion = new ArrayList<Integer>();
-		
+		HashMap<String, UnidadEjecucion> ues = new HashMap<String, UnidadEjecucion>();
+ 		
 		stmt = (PreparedStatement) dao.getConection().prepareStatement(sql);
 		
 		rs = stmt.executeQuery();
 		
 		while(rs.next()){
-			idsUnidadesEjecucion.add(rs.getInt("id_unidad_ejecucion"));
+
+			ues.put(rs.getString("denominacion"), new UnidadEjecucion(rs.getInt("id_unidad_ejecucion"), rs.getInt("numero_parcelas_aportadas"), rs.getString("denominacion")));
 		}
 		
-		for(int i = 0; i < idsUnidadesEjecucion.size(); i++){
-			sql = "UPDATE unidad_ejecucion set denominacion = 'UE" + (i+1) + "' WHERE id_unidad_ejecucion = " + idsUnidadesEjecucion.get(i);  
-			statement = dao.getConection().prepareStatement(sql);
-			statement.executeUpdate();
+		sql = "SELECT id_dominio FROM dominio";
+		stmt = (PreparedStatement) dao.getConection().prepareStatement(sql);
+		rs = stmt.executeQuery();
+		int dominioAux = -1;
+		if(rs.next()){
+			dominioAux = rs.getInt(1);
 		}
+
+		for (Entry<String, String> entry : p.getUes().entrySet()) {
+			
+			sql = "SELECT count(*) FROM parcela_aportada WHERE id_unidad_ejecucion = " + ues.get(entry.getKey()).getIdUnidadEjecucion();
+
+			statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+			rs = statement.executeQuery();
+			
+			if(rs.next()){
+				int numeroParcelasAportadas = rs.getInt("count(*)");
+			
+				if(numeroParcelasAportadas > Integer.parseInt(entry.getValue())){
+					//Si antes había más parcelas que ahora, tenemos que borrar parcelas de la base de datos.
+					int parcelasABorrar = numeroParcelasAportadas - Integer.parseInt(entry.getValue());
+					
+					String in = "";
+					
+					for(int i = 0; i < parcelasABorrar; i++){
+						in += "'"+ues.get(entry.getKey()).getDenominacion() + "PA" + (numeroParcelasAportadas - i) + "', ";
+					}
+					
+					in = in.substring(0, in.length() -2);
+					
+					sql = "DELETE FROM parcela_aportada WHERE denominacion IN ("+in+") AND id_unidad_ejecucion = " + ues.get(entry.getKey()).getIdUnidadEjecucion();
+
+					statement = dao.getConection().prepareStatement(sql);
+
+					statement.execute();
+					
+				}
+				else if(numeroParcelasAportadas < Integer.parseInt(entry.getValue())){
+					//Si antes había menos parcelas que ahora, tenemos que insertar parcelas en la base de datos. 
+					int parcelasAInsertar = Integer.parseInt(entry.getValue()) - numeroParcelasAportadas;
+
+					for(int i = 1; i < parcelasAInsertar+1; i++){
+						sql = "INSERT INTO parcela_aportada (denominacion, id_unidad_ejecucion, id_dominio) values (?, ?, ?)";
+						statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+						statement.setString(1, ues.get(entry.getKey()).getDenominacion() + "PA" + (numeroParcelasAportadas + i));		
+						statement.setInt(2, ues.get(entry.getKey()).getIdUnidadEjecucion());
+						statement.setInt(3,  dominioAux);
+						statement.execute();
+					}
+						
+				}
+				
+			}
+		}
+
 		
-		for(int i = 0; i < idsUnidadesEjecucionAntiguas.size(); i++){
-			
-			if(!idsUnidadesEjecucion.contains(idsUnidadesEjecucionAntiguas.get(i))){
-				//BORRAR TODAS LAS PARCELAS APORTADAS DE LA UD EJECUCION GETI
-			}
-			else{
-				//CHEQUEAR SI SE HA MODIFICADO EL NUMERO DE PARCELAS
-				
-				
-			}
-			
-		}
+//FALTA EL RENOMBRAMIENTO
+
+		
+//		for(int i = 0; i < idsUnidadesEjecucion.size(); i++){
+//			sql = "UPDATE unidad_ejecucion set denominacion = 'UE" + (i+1) + "' WHERE id_unidad_ejecucion = " + idsUnidadesEjecucion.get(i);  
+//			statement = dao.getConection().prepareStatement(sql);
+//			statement.executeUpdate();
+//		}
+
+		
 		
 		
 		
@@ -279,8 +336,6 @@ public class DaoWizard {
 		while(rs.next()){
 			municipios.add(new Municipio(rs.getString("municipio")));
 		}
-		
-		dao.getConection().close();
 		
 		return municipios;
 		
@@ -305,33 +360,18 @@ public class DaoWizard {
 		rs = statement.executeQuery();
 		
 		HashMap<Integer, P2unidadEjecucion> map = new HashMap<Integer, P2unidadEjecucion>();
-		
 		while(rs.next()){
 			map.put(rs.getInt("id_unidad_ejecucion"), new P2unidadEjecucion((int)rs.getDouble("superficie_servidumbre"), rs.getInt("id_unidad_ejecucion"), rs.getInt("numero_parcelas_aportadas"), rs.getString("denominacion")));
 		}
 		
-		sql = "SELECT pa.id_parcela_aportada, pa.denominacion, pa.propietario, pa.superficie, pa.id_unidad_ejecucion, pa.dominio FROM parcela_aportada pa, unidad_ejecucion ue WHERE pa.id_unidad_ejecucion = ue.id_unidad_ejecucion AND ue.id_plan = " + idPlan;
+		sql = "SELECT pa.id_parcela_aportada, pa.denominacion, pa.propietario, pa.superficie, pa.id_unidad_ejecucion, do.denominacion, do.id_dominio FROM parcela_aportada pa, unidad_ejecucion ue, dominio do WHERE pa.id_dominio = do.id_dominio AND pa.id_unidad_ejecucion = ue.id_unidad_ejecucion AND ue.id_plan = " + idPlan;
 
 		statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
 		
 		rs = statement.executeQuery();
 		
 		while(rs.next()){
-			map.get(rs.getInt("pa.id_unidad_ejecucion")).getParcelas().add(new ParcelaAportada(rs.getString("pa.denominacion"), rs.getString("pa.propietario"), rs.getString("pa.dominio"), rs.getInt("pa.id_unidad_ejecucion"), rs.getInt("pa.id_parcela_aportada"), (int)rs.getDouble("pa.superficie")));
-		}
-		
-		for (Entry<Integer, P2unidadEjecucion> entry : map.entrySet()) {
-			
-			P2unidadEjecucion ue = entry.getValue();
-			
-			while(ue.getNumeroParecelasAportadas() > ue.getParcelas().size()){
-				ue.getParcelas().add(new ParcelaAportada(ue.getDenominacion() + "PA" + (ue.getParcelas().size()+1), "", "", ue.getIdUnidadEjecucion(), 0));
-			}
-			
-			while(ue.getNumeroParecelasAportadas() < ue.getParcelas().size()){
-				ue.getParcelas().remove((ue.getParcelas().size()-1));
-			}
-
+			map.get(rs.getInt("pa.id_unidad_ejecucion")).getParcelas().add(new ParcelaAportada(rs.getInt("pa.id_parcela_aportada"), rs.getString("pa.denominacion"), rs.getString("pa.propietario"), rs.getString("do.denominacion"), rs.getInt("pa.id_unidad_ejecucion"), (int)rs.getDouble("pa.superficie"), rs.getInt("id_dominio") ));
 		}
 		
 		Phase2 p = new Phase2(idPlan, map);
@@ -345,6 +385,17 @@ public class DaoWizard {
 		PreparedStatement statement;
 		ResultSet rs;
 		
+		sql = "SELECT id_dominio, denominacion FROM dominio";
+		statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+		rs = statement.executeQuery();
+		
+		HashMap<String, Integer> dominios = new HashMap<String, Integer>();
+		
+		while(rs.next()){
+			dominios.put(rs.getString("denominacion"), rs.getInt("id_dominio"));
+		}
+		
+		
 		for(Entry <Integer, P2unidadEjecucion> entry : p.getMap().entrySet()){
 			
 			sql = "UPDATE unidad_ejecucion SET superficie_servidumbre = ? WHERE id_unidad_ejecucion = ?"; 
@@ -355,11 +406,11 @@ public class DaoWizard {
 			
 			for(int i = 0; i < entry.getValue().getParcelas().size(); i++){
 				
-				sql = "UPDATE parcela_aportada SET superficie = ?, propietario = ?, dominio = ? WHERE id_parcela_aportada = ?";
+				sql = "UPDATE parcela_aportada SET superficie = ?, propietario = ?, id_dominio = ? WHERE id_parcela_aportada = ?";
 				statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
 				statement.setDouble(1, entry.getValue().getParcelas().get(i).getSuperficie());		
 				statement.setString(2, entry.getValue().getParcelas().get(i).getPropietario());
-				statement.setString(3, entry.getValue().getParcelas().get(i).getDominio());
+				statement.setInt(3, dominios.get(entry.getValue().getParcelas().get(i).getDominio()));
 				statement.setInt(4, entry.getValue().getParcelas().get(i).getIdParcelaAportada());
 				statement.execute();
 			}
@@ -368,5 +419,235 @@ public class DaoWizard {
 		
 	}
 	
+	//FIN FASE 2
+	
+	//PHASE 3
+	
+		public Phase3 getPhase3(int idPlan) throws SQLException{
+			
+			String sql;
+			PreparedStatement statement;
+			ResultSet rs;
+			
+			
+			//Obtenemos todos los tipos de ordenacion urbanistica estructural (global) de un plan
+			sql = "SELECT id_tipo_ordenacion_global, denominacion, superficie FROM tipo_ordenacion_global WHERE id_plan = " + idPlan;
+			
+			statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+			
+			rs = statement.executeQuery();
+			
+			ArrayList<OrdenacionUrbanisticaEstructural> tipos = new ArrayList<OrdenacionUrbanisticaEstructural>();
+			while(rs.next()){
+				tipos.add(new OrdenacionUrbanisticaEstructural(rs.getInt("id_tipo_ordenacion_global"), rs.getString("denominacion"), (int)rs.getDouble("superficie")));
+			}
+			
+			int edifMaxSobreRasante = -1;
+			int edifMaxBajoRasante = -1;
+			
+			sql = "SELECT edif_max_sr, edif_max_br FROM plan WHERE id_plan = " + idPlan;
+
+			statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+			
+			rs = statement.executeQuery();
+			
+			if(rs.next()){
+				edifMaxBajoRasante = rs.getInt("edif_max_br");
+				edifMaxSobreRasante = rs.getInt("edif_max_sr");
+			}
+
+			Phase3 p = new Phase3(idPlan, tipos, edifMaxSobreRasante, edifMaxBajoRasante);
+			
+			return p;		
+		}
+		
+		public void updatePhase3(Phase3 p) throws SQLException{
+			
+			String sql;
+			PreparedStatement statement;
+			ResultSet rs;
+			
+			sql = "UPDATE plan SET edif_max_sr = ?, edif_max_br = ? WHERE id_plan = ?"; 
+			statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+			statement.setDouble(1, p.getEdifMaxSobreRasante());		
+			statement.setDouble(2, p.getEdifMaxBajoRasante());
+			statement.setInt(3, p.getIdPlan());
+			statement.execute();
+			
+			String notIn = "";
+			
+			for (Entry<Integer, OrdenacionUrbanisticaEstructural> entry : p.getUpdate().entrySet()) {
+				notIn += entry.getValue().getIdOrdenacionUrbanisticaEstructural() + ", ";
+				
+				sql = "UPDATE tipo_ordenacion_global SET denominacion = ?, superficie = ? WHERE id_tipo_ordenacion_global = ?"; 
+				statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+				statement.setString(1, entry.getValue().getNombre());		
+				statement.setDouble(2, entry.getValue().getSuperficie());
+				statement.setInt(3, entry.getValue().getIdOrdenacionUrbanisticaEstructural());
+				statement.execute();
+				
+			}
+			
+			if(notIn.length() > 2){
+				notIn = notIn.substring(0, notIn.length() -2);
+				sql = "DELETE FROM tipo_ordenacion_global WHERE id_tipo_ordenacion_global NOT IN ("+notIn+") AND id_plan = " + p.getIdPlan();
+				statement = dao.getConection().prepareStatement(sql);
+				statement.execute();
+			}
+			
+			for (Entry<String, OrdenacionUrbanisticaEstructural> entry : p.getInsert().entrySet()) {
+				
+				sql = "INSERT INTO tipo_ordenacion_global (denominacion, superficie, id_plan) values (?, ?, ?)";
+				statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+				statement.setString(1, entry.getValue().getNombre());		
+				statement.setDouble(2, entry.getValue().getSuperficie());
+				statement.setInt(3, p.getIdPlan());
+				statement.execute();
+				
+			}
+			
+			
+		}
+
+		//FIN FASE 3
+	
+		//FASE 4
+		
+		public Phase4 getPhase4(int idPlan) throws SQLException{
+			
+			String sql;
+			PreparedStatement statement;
+			ResultSet rs;
+			
+			
+			//Obtenemos todos los tipos de ordenacion urbanistica pormenorizada de un plan
+			sql = "SELECT id_tipo_ordenacion_pormenorizada, denominacion, coef_srpb, coef_srpp, coef_br FROM tipo_ordenacion_pormenorizada WHERE id_plan = " + idPlan;
+			
+			statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+			
+			rs = statement.executeQuery();
+			
+			ArrayList<OrdenacionUrbanisticaPormenorizada> tipos = new ArrayList<OrdenacionUrbanisticaPormenorizada>();
+			while(rs.next()){
+				tipos.add(new OrdenacionUrbanisticaPormenorizada(rs.getString("denominacion"), rs.getDouble("coef_srpb"), rs.getDouble("coef_srpp"), rs.getDouble("coef_br"), rs.getInt("id_tipo_ordenacion_pormenorizada")));
+			}
+
+			sql = "SELECT id_unidad_ejecucion, denominacion, numero_parcelas_resultantes FROM unidad_ejecucion WHERE id_plan = " + idPlan;
+			
+			statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+			
+			rs = statement.executeQuery();
+			
+			HashMap<String, UnidadEjecucion> ues = new HashMap<String, UnidadEjecucion>();
+			
+			while(rs.next()){
+				ues.put(rs.getString("denominacion"), new UnidadEjecucion(rs.getInt("numero_parcelas_resultantes"), rs.getString("denominacion"), rs.getInt("id_unidad_ejecucion")));
+			}
+			
+			Phase4 p = new Phase4(tipos, null, null, idPlan);
+			p.setUes(ues);
+			
+			
+			return p;		
+		}
+		
+		public void updatePhase4(Phase4 p) throws SQLException{
+			
+			String sql;
+			PreparedStatement statement;
+			ResultSet rs;
+			
+			String notIn = "";
+			
+			for (Entry<Integer, OrdenacionUrbanisticaPormenorizada> entry : p.getUpdate().entrySet()) {
+				notIn += entry.getValue().getIdOrdenacionPormenorizada() + ", ";
+				
+				sql = "UPDATE tipo_ordenacion_pormenorizada SET denominacion = ?, coef_srpb = ?, coef_srpp = ?, coef_br = ? WHERE id_tipo_ordenacion_pormenorizada = ?"; 
+				statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+				statement.setString(1, entry.getValue().getDenominacion());		
+				statement.setDouble(2, entry.getValue().getCoefSRPB());
+				statement.setDouble(3, entry.getValue().getCoefSRPP());
+				statement.setDouble(4, entry.getValue().getCoefBR());
+				statement.setInt(5, entry.getValue().getIdOrdenacionPormenorizada());
+				statement.execute();
+				
+			}
+			
+			if(notIn.length() > 2){
+				notIn = notIn.substring(0, notIn.length() -2);
+				sql = "DELETE FROM tipo_ordenacion_pormenorizada WHERE id_tipo_ordenacion_pormenorizada NOT IN ("+notIn+") AND id_plan = " + p.getIdPlan();
+				statement = dao.getConection().prepareStatement(sql);
+				statement.execute();
+			}
+			
+			for (Entry<String, OrdenacionUrbanisticaPormenorizada> entry : p.getInsert().entrySet()) {
+				sql = "INSERT INTO tipo_ordenacion_pormenorizada (denominacion, coef_srpb, coef_srpp, coef_br, id_plan) values (?, ?, ?, ?, ?)";
+				statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+				statement.setString(1, entry.getValue().getDenominacion());		
+				statement.setDouble(2, entry.getValue().getCoefSRPB());
+				statement.setDouble(3, entry.getValue().getCoefSRPP());
+				statement.setDouble(4, entry.getValue().getCoefBR());
+				statement.setInt(5, p.getIdPlan());
+				statement.execute();
+				
+			}
+			
+			//Recuperamos por cada unidad de ejecucion el numero de parcelas resultantes que había antes.
+			for (Entry<String, UnidadEjecucion> entry : p.getUes().entrySet()) {
+				sql = "SELECT count(*) FROM parcela_resultante WHERE id_unidad_ejecucion = " + entry.getValue().getIdUnidadEjecucion();
+
+				statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+				rs = statement.executeQuery();
+				
+				if(rs.next()){
+					int numeroParcelasResultantes = rs.getInt("count(*)");
+					
+					if(numeroParcelasResultantes > entry.getValue().getNumeroParcelasResultantes()){
+						//Si antes había más parcelas que ahora, tenemos que borrar parcelas de la base de datos.
+						int parcelasABorrar = numeroParcelasResultantes - entry.getValue().getNumeroParcelasResultantes();
+						
+						String in = "";
+						
+						for(int i = 0; i < parcelasABorrar; i++){
+							in += "'"+entry.getValue().getDenominacion() + "PR" + (numeroParcelasResultantes - i) + "', ";
+						}
+						
+						in = in.substring(0, in.length() -2);
+						
+						sql = "DELETE FROM parcela_resultante WHERE denominacion IN ("+in+") AND id_unidad_ejecucion = " + entry.getValue().getIdUnidadEjecucion();
+
+						statement = dao.getConection().prepareStatement(sql);
+
+						statement.execute();
+						
+					}
+					else if(numeroParcelasResultantes < entry.getValue().getNumeroParcelasResultantes()){
+						//Si antes había menos parcelas que ahora, tenemos que insertar parcelas en la base de datos. 
+						int parcelasAInsertar = entry.getValue().getNumeroParcelasResultantes() - numeroParcelasResultantes;
+
+						for(int i = 1; i < parcelasAInsertar+1; i++){
+							sql = "INSERT INTO parcela_resultante (denominacion, id_unidad_ejecucion) values (?, ?)";
+							statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+							statement.setString(1, entry.getValue().getDenominacion() + "PR" + (numeroParcelasResultantes + i));		
+							statement.setInt(2, entry.getValue().getIdUnidadEjecucion());
+							statement.execute();
+						}
+							
+					}
+					
+					
+				}
+				
+				sql = "UPDATE unidad_ejecucion SET numero_parcelas_resultantes = ? WHERE id_unidad_ejecucion = ?"; 
+				statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+				statement.setInt(1, entry.getValue().getNumeroParcelasResultantes());		
+				statement.setInt(2, entry.getValue().getIdUnidadEjecucion());
+				statement.execute();
+				
+			}
+			
+		}
+		
+		//FIN FASE 4
 	
 }

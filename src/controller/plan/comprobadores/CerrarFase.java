@@ -24,29 +24,31 @@ public abstract class CerrarFase {
 		dao = new Dao();
 	}
 	
-	abstract void update();
 	abstract ArrayList<String> checkPhase();
-	abstract Phase retrieveIncorrectPhaseObject();
-	abstract Phase getUpdateableIncorrectPhase();
+	abstract void update(Phase p);
 	abstract void updateIncorrectPhase(Phase p);
+	abstract Phase loadedPhase();
+	abstract Phase correctedPhase();
 	
 	public void execute() throws ServletException, IOException, SQLException{
+		
 		Phase p = null;
 		ArrayList<String> msg = checkPhase();
-		boolean isCorrect = false;
 		if(msg.size() == 0){
-			isCorrect = true;
-		}
-		if(isCorrect){
-			update();
+			p = loadedPhase();
+			update(p);
 		}
 		else{
-			p = retrieveIncorrectPhaseObject();
-			updateIncorrectPhase(getUpdateableIncorrectPhase());
+			p = correctedPhase();
+			updateIncorrectPhase(p);
 		}
-		attributeLoad(p, msg, isCorrect);
+		
+		attributeLoad(p, msg);
+		
+		dao.close();
 		
 		request.getRequestDispatcher("/user_area/load_plan").forward(request, response);
+		
 	}
 	
 	
@@ -73,8 +75,8 @@ public abstract class CerrarFase {
 		}
 	}
 
-	public void attributeLoad(Phase p, ArrayList<String> msg, boolean isCorrect) throws SQLException{
-		if(isCorrect){
+	public void attributeLoad(Phase p, ArrayList<String> msg) throws SQLException{
+		if(msg.size() == 0){
 			request.setAttribute("id", request.getSession().getAttribute("idPlan"));
 		}
 		else{

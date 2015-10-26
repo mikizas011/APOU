@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import controller.wizard.classes.u.ParcelaAportada;
 import model.Dao;
 
 public class UnidadEjecucion {
@@ -16,15 +15,21 @@ public class UnidadEjecucion {
 	private double superficieServidumbre, superficieEspaciosLibres, superficieEquipamientos, superficieRedViaria;
 	private ArrayList<ParcelaAportada> parcelasAportadas;
 	private ArrayList<ParcelaResultante> parcelasResultantes;
-	private ArrayList<TipoOrdenacionPormenorizada> tiposOrdenacionPormenorizada;
+	private ArrayList<OrdenacionUrbanisticaPormenorizada> tiposOrdenacionPormenorizada;
 	
 	
+	public UnidadEjecucion(int numeroParcelasResultantes, String denominacion, int idUnidadEjecucion){
+		super();
+		this.numeroParcelasResultantes = numeroParcelasResultantes;
+		this.denominacion = denominacion;
+		this.idUnidadEjecucion = idUnidadEjecucion;
+	}
 	
-	
-	public UnidadEjecucion(int numeroParcelasAportadas, String denominacion) {
+	public UnidadEjecucion(int idUnidadEjecucion, int numeroParcelasAportadas, String denominacion) {
 		super();
 		this.numeroParcelasAportadas = numeroParcelasAportadas;
 		this.denominacion = denominacion;
+		this.idUnidadEjecucion = idUnidadEjecucion;
 		parcelasAportadas = new ArrayList<ParcelaAportada>();
 		parcelasResultantes = new ArrayList<ParcelaResultante>();
 	}
@@ -127,21 +132,7 @@ public class UnidadEjecucion {
 	}
 	
 	
-	public void cargarParcelasAportadas() throws SQLException{
-		
-		Dao dao = new Dao();
-		this.setParcelasAportadas(dao.getPrograma().cargarParcelasAportadasAUnidadDeEjecucion(this.getIdUnidadEjecucion()));
-		dao.getConection().close();
-		
-	}
-	
-	public void cargarParcelasResultantes() throws SQLException{
-		
-		Dao dao = new Dao();
-		this.setParcelasResultantes(dao.getPrograma().cargarParcelasResultantesAUnidadDeEjecucion(this.getIdUnidadEjecucion()));
-		dao.getConection().close();
 
-	}
 	public int getNumeroPlazasAparcamiento() {
 		return numeroPlazasAparcamiento;
 	}
@@ -166,11 +157,11 @@ public class UnidadEjecucion {
 	public void setSuperficieRedViaria(double superficieRedViaria) {
 		this.superficieRedViaria = superficieRedViaria;
 	}
-	public ArrayList<TipoOrdenacionPormenorizada> getTiposOrdenacionPormenorizada() {
+	public ArrayList<OrdenacionUrbanisticaPormenorizada> getTiposOrdenacionPormenorizada() {
 		return tiposOrdenacionPormenorizada;
 	}
 	public void setTiposOrdenacionPormenorizada(
-			ArrayList<TipoOrdenacionPormenorizada> tiposOrdenacionPormenorizada) {
+			ArrayList<OrdenacionUrbanisticaPormenorizada> tiposOrdenacionPormenorizada) {
 		this.tiposOrdenacionPormenorizada = tiposOrdenacionPormenorizada;
 	}
 	

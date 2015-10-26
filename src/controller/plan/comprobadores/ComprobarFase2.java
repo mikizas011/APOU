@@ -13,11 +13,13 @@ import javax.servlet.http.HttpServletResponse;
 
 
 
+
+
 import controller.errores.SQLError;
+import controller.wizard.classes.P2unidadEjecucion;
 import controller.wizard.classes.phases.Phase;
 import controller.wizard.classes.phases.Phase1;
 import controller.wizard.classes.phases.Phase2;
-import controller.wizard.classes.u.P2unidadEjecucion;
 
 public class ComprobarFase2 extends CerrarFase{
 
@@ -28,101 +30,50 @@ public class ComprobarFase2 extends CerrarFase{
 		super(request, response);
 		// TODO Auto-generated constructor stub
 	}
-
-	@Override
-	void update() {
-
-		try {
-			
-			dao.getWizard().updatePhase2(p);
-			dao.getWizard().setPhaseCorrect(p.getIdPlan(), 2);
-			dao.close();
-
-		} catch (SQLException e) {
-			new SQLError(request, response, e);
-		}
-
-		
-	}
-
 	@Override
 	ArrayList<String> checkPhase() {
 		// TODO Auto-generated method stub
+
+		ArrayList<String> cf = new ArrayList<String>();
 		
-		try {
+		boolean errorSup = false;
+		boolean errorNull = false;
+		
+		for (Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
 
-			ArrayList<String> cf = new ArrayList<String>();
-			
-			p = dao.getWizard().getPhase2((Integer)request.getSession().getAttribute("idPlan"));
-
-			for(Entry <Integer, P2unidadEjecucion> entry : p.getMap().entrySet()){
-				
-				for(int i = 0; i < entry.getValue().getParcelas().size(); i++){
-					
-					String value = request.getParameter(entry.getValue().getDenominacion() + "PA" + (i+1));
-					
-					p.getMap().get(
-							request.getParameter(
-									entry.getValue().getDenominacion() + ":idUe"))
-									.getParcelas().get(i).setDominio(
-											request.getParameter(
-													entry.getValue().
-													getParcelas().get(i).getDenominacion()+":dominio"));
-					
-					if( (!isPositive(request.getParameter(value + ":superficie"))) ){
-						if(!cf.contains("Las superficies tienen que ser positivas.\n")){
-							cf.add("Las superficies tienen que ser positivas.\n");
-						}
-						p.getMap().get(request.getParameter(entry.getValue().getDenominacion() + ":idUe")).getParcelas().get(i).setSuperficie(0);
-					}
-					else{
-						p.getMap().get(request.getParameter(entry.getValue().getDenominacion() + ":idUe")).getParcelas().get(i).setSuperficie(Double.parseDouble(request.getParameter(entry.getValue().getParcelas().get(i).getDenominacion()+":superficie")));
-					}
-					if( (isNull(request.getParameter(value + ":propietario"))) ){
-						if(!cf.contains("Los propietarios tienen que tener una denominación entre 1 y 100 caracteres.\n")){
-							cf.add("Los propietarios tienen que tener una denominación entre 1 y 100 caracteres.\n");
-						}
-						p.getMap().get(request.getParameter(entry.getValue().getDenominacion() + ":idUe")).getParcelas().get(i).setPropietario("");
-					}
-					else{
-						p.getMap().get(request.getParameter(entry.getValue().getDenominacion() + ":idUe")).getParcelas().get(i).setDominio(request.getParameter(entry.getValue().getParcelas().get(i).getDenominacion()+":propietario"));
-					}
-					
+			if(entry.getKey().contains("superficie")){
+				if(!isPositive(request.getParameter(entry.getKey()))){
+					errorSup = true;
 				}
-				
-				if(!isPositive(request.getParameter(entry.getValue().getDenominacion() + ":servidumbre"))){
-					if(!cf.contains("Las superficies tienen que ser positivas.\n")){
-						cf.add("Las superficies tienen que ser positivas.\n");
-					}
-					p.getMap().get(request.getParameter(entry.getValue().getDenominacion() + ":idUe")).setSuperficieServidumbre(0);
+			}
+			else if(entry.getKey().contains("propietario")){
+				if(isNull(request.getParameter(entry.getKey()))){
+					errorNull = true;
 				}
-				else{
-					p.getMap().get(request.getParameter(entry.getValue().getDenominacion() + ":idUe")).setSuperficieServidumbre(Integer.parseInt(request.getParameter(entry.getValue().getDenominacion() + "servidumbre")));
+			}
+			else if(entry.getKey().contains("servidumbre")){
+				if(!isPositive(request.getParameter(entry.getKey()))){
+					errorSup = true;
 				}
-				
 			}
 				
 			
-			return cf;
-		
-		} catch (SQLException e) {
-			new SQLError(request, response, e);
-			return null;
 		}
+		
+		if(errorSup){
+			cf.add("Las superficies tienen que ser positivas.");
+		}
+		if(errorNull){
+			cf.add("Los propietarios tienen que tener un nombre.");
+		}
+		
+		return cf;
+		
+		
 	
 		
 	}
 
-	@Override
-	Phase retrieveIncorrectPhaseObject() {
-		return p;
-	}
-
-	@Override
-	Phase getUpdateableIncorrectPhase() {
-		// TODO Auto-generated method stub
-		return p;
-	}
 
 	@Override
 	void updateIncorrectPhase(Phase p) {
@@ -138,6 +89,126 @@ public class ComprobarFase2 extends CerrarFase{
 			new SQLError(request, response, e);
 		}
 		
+	}
+
+	@Override
+	void update(Phase p) {
+		
+		try {
+			
+			dao.getWizard().updatePhase2((Phase2) p);
+			dao.getWizard().setPhaseCorrect(p.getIdPlan(), 2);
+			dao.close();
+
+		} catch (SQLException e) {
+			new SQLError(request, response, e);
+		}		
+	}
+
+	@Override
+	Phase loadedPhase() {
+		// TODO Auto-generated method stub
+		try {
+			
+			p = dao.getWizard().getPhase2((Integer)request.getSession().getAttribute("idPlan"));
+
+			for(Entry <Integer, P2unidadEjecucion> entry : p.getMap().entrySet()){
+				
+				String a = entry.getValue().getDenominacion() + ":idUe";
+				String b = request.getParameter(a);
+				
+				//Hacemos el parseint para que coincida con la estructura int P2ue del hashmap
+				P2unidadEjecucion p2 = p.getMap().get(Integer.parseInt(b));
+				
+				
+				for(int i = 0; i < entry.getValue().getParcelas().size(); i++){
+					
+					String value = entry.getValue().getDenominacion() + "PA" + (i+1);
+					
+					
+					p2.getParcelas().get(i).setDominio(
+											request.getParameter(
+													entry.getValue().
+													getParcelas().get(i).getDenominacion()+":dominio"));
+					
+					p2.getParcelas().get(i).setSuperficie(Double.parseDouble(request.getParameter(entry.getValue().getParcelas().get(i).getDenominacion()+":superficie")));
+					
+					p2.getParcelas().get(i).setPropietario(request.getParameter(entry.getValue().getParcelas().get(i).getDenominacion()+":propietario"));
+					
+				}
+				
+				p2.setSuperficieServidumbre(Integer.parseInt(request.getParameter(entry.getValue().getDenominacion() + ":servidumbre")));
+				
+				
+			}
+				
+			
+			return p;
+		
+		} catch (SQLException e) {
+			new SQLError(request, response, e);
+			return null;
+		}	
+	}
+
+	@Override
+	Phase correctedPhase() {
+
+		try {
+			
+			p = dao.getWizard().getPhase2((Integer)request.getSession().getAttribute("idPlan"));
+
+			for(Entry <Integer, P2unidadEjecucion> entry : p.getMap().entrySet()){
+				
+				String a = entry.getValue().getDenominacion() + ":idUe";
+				String b = request.getParameter(a);
+				
+				//Hacemos el parseint para que coincida con la estructura int P2ue del hashmap
+				P2unidadEjecucion p2 = p.getMap().get(Integer.parseInt(b));
+				
+				
+				for(int i = 0; i < entry.getValue().getParcelas().size(); i++){
+					
+					String value = entry.getValue().getDenominacion() + "PA" + (i+1);
+					
+					
+					p2.getParcelas().get(i).setDominio(
+											request.getParameter(
+													entry.getValue().
+													getParcelas().get(i).getDenominacion()+":dominio"));
+					
+					if( (!isPositive(request.getParameter(value + ":superficie"))) ){
+						p2.getParcelas().get(i).setSuperficie(0);
+					}
+					else{
+						p2.getParcelas().get(i).setSuperficie(Double.parseDouble(request.getParameter(entry.getValue().getParcelas().get(i).getDenominacion()+":superficie")));
+					}
+					
+					if( (isNull(request.getParameter(value + ":propietario"))) ){
+						p2.getParcelas().get(i).setPropietario("");
+					}
+					else{
+						p2.getParcelas().get(i).setPropietario(request.getParameter(entry.getValue().getParcelas().get(i).getDenominacion()+":propietario"));
+					}
+					
+				}
+				
+				if(!isPositive(request.getParameter(entry.getValue().getDenominacion() + ":servidumbre"))){
+					p2.setSuperficieServidumbre(0);
+				}
+				else{
+					p2.setSuperficieServidumbre(Integer.parseInt(request.getParameter(entry.getValue().getDenominacion() + ":servidumbre")));
+				}
+				
+			}
+				
+			
+			return p;
+		
+		} catch (SQLException e) {
+			new SQLError(request, response, e);
+			return null;
+		}
 	}
 
 }

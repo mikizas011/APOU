@@ -40,13 +40,15 @@ public class CargarPlanes extends HttpServlet {
 		HttpSession sesion = request.getSession();
 
 		try {
-			ArrayList<Plan> planes = dao.getPrograma().getPlanes(request.getUserPrincipal().getName());
+			ArrayList<Plan> planes = dao.getProgram().getPlanes(request.getUserPrincipal().getName());
 			
 			for(int i = 0; i< planes.size(); i++){
 				if(planes.get(i).getDenominacion() == null){
 					planes.get(i).setDenominacion("P: " + planes.get(i).getFechaCreacion());
 				}
 			}
+			
+			dao.close();
 			
 			sesion.setAttribute("planes", planes);
 			

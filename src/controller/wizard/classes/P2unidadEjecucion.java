@@ -1,6 +1,8 @@
-package controller.wizard.classes.u;
+package controller.wizard.classes;
 
 import java.util.ArrayList;
+
+//	Se utiliza en la fase 2
 
 public class P2unidadEjecucion {
 
@@ -11,6 +13,20 @@ public class P2unidadEjecucion {
 	
 
 	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		
+		String a = "Denom = " + denominacion +" Sup Serv = " + superficieServidumbre + " idUE = " + idUnidadEjecucion + " numPA = " + numeroParecelasAportadas;
+		String b = "";
+		for(int i = 0; i < parcelas.size(); i++){
+			b += " parcela " + parcelas.get(i).getDenominacion() + " ue " + parcelas.get(i).getIdUnidadEjecucion();
+		}
+		
+		return a+b;
+
+		
+	}
 	public P2unidadEjecucion(int superficieServidumbre, int idUnidadEjecucion,
 			int numeroParecelasAportadas,
 			String denominacion) {
@@ -64,6 +80,13 @@ public class P2unidadEjecucion {
 		this.denominacion = denominacion;
 	}
 	
+	public int getSuperficieParcelas(){
+		int sup = 0;
+		for(int i = 0; i < parcelas.size(); i++){
+			sup += parcelas.get(i).getSuperficie();
+		}
+		return sup;
+	}
 	
 	
 }
