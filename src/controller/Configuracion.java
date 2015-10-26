@@ -9,7 +9,7 @@ public class Configuracion {
 	private static Configuracion configuracion;
 	private int idPlan;
 	private int idUser;
-	private String root ="http://192.168.1.54:8080/APOU/";
+	private String root ="http://localhost:8080/APOU/";
 	
 	
 	private Configuracion(){}
