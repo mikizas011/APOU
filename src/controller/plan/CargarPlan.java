@@ -95,19 +95,29 @@ public class CargarPlan extends HttpServlet {
 					
 					for(int i = 0; i < fase + difFase; i++){
 						
-						if(faseCorrecta[i]){
-							estadoFase[i] = "checked";
+						
+						if((fase + difFase) <= 8){
+							if(faseCorrecta[i]){
+								estadoFase[i] = "checked";
+							}
+							else{
+								estadoFase[i] = "opened";
+							}	
 						}
 						else{
-							estadoFase[i] = "opened";
-						}			
+							if(i < 8){
+								estadoFase[i] = "checked";
+							}
+						}
+						
+									
 					}
 					
 					for(int i = fase + difFase; i < 8; i++){
 						estadoFase[i] = "closed";
 					}
 					
-					if(fase < 8){
+					if(fase < 9){
 						estadoFase[fase-1] = "actual";
 					}
 					

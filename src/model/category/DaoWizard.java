@@ -926,5 +926,25 @@ public class DaoWizard {
 					return p;		
 				}
 				
+				public void updatePhase8(Phase8 p) throws SQLException{
+					
+					String sql;
+					PreparedStatement statement;
+					
+					for(Entry <Integer, UnidadEjecucion> entry : p.getUes().entrySet()){
+
+						sql = "UPDATE unidad_ejecucion SET superficie_espacios_libres = ?, superficie_equipamientos = ?, superficie_red_viaria = ?, numero_plazas_aparcamiento = ? WHERE id_unidad_ejecucion = ?";  
+						statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+						statement.setDouble(1, entry.getValue().getSuperficieEspaciosLibres());
+						statement.setDouble(2, entry.getValue().getSuperficieEquipamientos());
+						statement.setDouble(3, entry.getValue().getSuperficieRedViaria());
+						statement.setInt(4, entry.getValue().getNumeroPlazasAparcamiento());
+						statement.setInt(5, entry.getValue().getIdUnidadEjecucion());
+						statement.execute();
+						
+					}
+		
+				}
+				
 				//FIN FASE 8
 }
