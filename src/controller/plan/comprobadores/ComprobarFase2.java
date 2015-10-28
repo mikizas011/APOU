@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
 
+
 import controller.errores.SQLError;
 import controller.wizard.classes.P2unidadEjecucion;
 import controller.wizard.classes.phases.Phase;
@@ -31,7 +32,7 @@ public class ComprobarFase2 extends CerrarFase{
 		// TODO Auto-generated constructor stub
 	}
 	@Override
-	ArrayList<String> checkPhase() {
+	ArrayList<String> checkData() {
 		// TODO Auto-generated method stub
 
 		ArrayList<String> cf = new ArrayList<String>();
@@ -209,4 +210,10 @@ public class ComprobarFase2 extends CerrarFase{
 		}
 	}
 
+	@Override
+	ArrayList<String> checkPhase(ArrayList<String> msg, Phase pa) {
+		// TODO Auto-generated method stub
+		return msg;
+	}
+	
 }

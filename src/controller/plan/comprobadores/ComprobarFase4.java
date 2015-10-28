@@ -23,7 +23,7 @@ public class ComprobarFase4 extends CerrarFase{
 	}
 
 	@Override
-	ArrayList<String> checkPhase() {
+	ArrayList<String> checkData() {
 		ArrayList<String> cf = new ArrayList<String>();
 		
 		boolean existeTOUP = false;
@@ -371,4 +371,10 @@ public class ComprobarFase4 extends CerrarFase{
 		
 	}
 
+	@Override
+	ArrayList<String> checkPhase(ArrayList<String> msg, Phase pa) {
+		// TODO Auto-generated method stub
+		return msg;
+	}
+	
 }

@@ -12,11 +12,30 @@ public class UnidadEjecucion {
 	
 	private int idUnidadEjecucion, numeroParcelasAportadas, numeroParcelasResultantes, idPlan, numeroPlazasAparcamiento;
 	private String denominacion;
-	private double superficieServidumbre, superficieEspaciosLibres, superficieEquipamientos, superficieRedViaria;
+	private double superficieServidumbre, superficieEspaciosLibres, superficieEquipamientos, superficieRedViaria, edificabilidadPonderada;
 	private ArrayList<ParcelaAportada> parcelasAportadas;
 	private ArrayList<ParcelaResultante> parcelasResultantes;
 	private ArrayList<OrdenacionUrbanisticaPormenorizada> tiposOrdenacionPormenorizada;
 	
+	public UnidadEjecucion(double superficieEspaciosLibres,
+			double superficieEquipamiento, double superficieRedViaria,
+			int plazasAparcamiento, String denominacion, int idUnidadEjecucion){
+		
+		this.superficieEspaciosLibres = superficieEspaciosLibres;
+		this.superficieEquipamientos = superficieEquipamiento;
+		this.superficieRedViaria = superficieRedViaria;
+		this.numeroPlazasAparcamiento = plazasAparcamiento;
+		this.denominacion = denominacion;
+		this.setIdUnidadEjecucion(idUnidadEjecucion);
+		
+	}
+	
+	public UnidadEjecucion(String denominacion, int idUnidadEjecucion, double edificabilidadPonderada){
+		super();
+		this.denominacion = denominacion;
+		this.idUnidadEjecucion = idUnidadEjecucion;
+		this.edificabilidadPonderada = edificabilidadPonderada;
+	}
 	
 	public UnidadEjecucion(int numeroParcelasResultantes, String denominacion, int idUnidadEjecucion){
 		super();
@@ -164,5 +183,29 @@ public class UnidadEjecucion {
 			ArrayList<OrdenacionUrbanisticaPormenorizada> tiposOrdenacionPormenorizada) {
 		this.tiposOrdenacionPormenorizada = tiposOrdenacionPormenorizada;
 	}
+
+	public double getEdificabilidadPonderada() {
+		return edificabilidadPonderada;
+	}
+
+	public void setEdificabilidadPonderada(double edificabilidadPonderada) {
+		this.edificabilidadPonderada = edificabilidadPonderada;
+	}
+
+	@Override
+	public boolean equals(Object arg0) {
+		
+		UnidadEjecucion aux = (UnidadEjecucion) arg0;
+		
+		if(aux.getIdUnidadEjecucion() == getIdUnidadEjecucion()){
+			return true;
+		}
+		else{
+			return false;
+		}
+		
+	}
+	
+	
 	
 }

@@ -13,7 +13,7 @@ public class prueba {
 	
 		Dao dao = new Dao();
 		
-		dao.getWizard().getPhase5(15);
+		dao.getWizard().getPhase6(15);
 	
 	}
 

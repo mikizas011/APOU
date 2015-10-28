@@ -40,9 +40,7 @@ public class DaoProgram {
 		}
 		
 		public int newPlan(String usuario) throws SQLException{
-			String ret = "";
 			
-				
 			String sql = "INSERT INTO plan (usuario, fecha_creacion, fecha_ultima_modificacion, fase) values (?, ?, ?, ?)";
 			
 			PreparedStatement statement = (PreparedStatement) dao.getConection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -65,6 +63,18 @@ public class DaoProgram {
 		    
 			return id;
 			
+			
+		}
+		
+		public void updateLastModDate(int idPlan) throws SQLException{
+			
+			String sql = "UPDATE plan SET fecha_ultima_modificacion = ? WHERE id_plan = " + idPlan;
+			
+			PreparedStatement statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+			
+			statement.setDate(1, new Date(System.currentTimeMillis()));
+			
+			statement.execute();
 			
 		}
 		

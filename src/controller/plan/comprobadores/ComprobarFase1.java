@@ -41,7 +41,7 @@ public class ComprobarFase1 extends CerrarFase{
 	}
 
 	@Override
-	ArrayList<String> checkPhase() {
+	ArrayList<String> checkData() {
 		ArrayList<String> cf = new ArrayList<String>();
 		
 		if(isNull(request.getParameter("denominacion_plan"))){
@@ -96,14 +96,14 @@ public class ComprobarFase1 extends CerrarFase{
 
 	@Override
 	Phase loadedPhase() {
-		Phase1 p = new Phase1((Integer)request.getSession().getAttribute("idPlan"), request.getParameter("denominacion_plan"), request.getParameter("denominacion_sector"), request.getParameter("numero_sector").toString(), request.getParameter("municipio"), request.getParameter("idioma"), request.getParameter("superficie"), null);
+		Phase1 p = new Phase1((Integer)request.getSession().getAttribute("idPlan"), request.getParameter("denominacion_plan"), request.getParameter("denominacion_sector"), request.getParameter("numero_sector").toString(), request.getParameter("municipio"), request.getParameter("idioma"), request.getParameter("superficie"), Integer.parseInt(request.getParameter("ML")));
 		p.setUes(ues);
 		return p;
 	}
 
 	@Override
 	Phase correctedPhase() {
-		Phase1 p = new Phase1((Integer)request.getSession().getAttribute("idPlan"), request.getParameter("denominacion_plan"), request.getParameter("denominacion_sector"), request.getParameter("numero_sector"), request.getParameter("municipio"), request.getParameter("idioma"), request.getParameter("superficie"), null);
+		Phase1 p = new Phase1((Integer)request.getSession().getAttribute("idPlan"), request.getParameter("denominacion_plan"), request.getParameter("denominacion_sector"), request.getParameter("numero_sector"), request.getParameter("municipio"), request.getParameter("idioma"), request.getParameter("superficie"), Integer.parseInt(request.getParameter("ML")));
 
 		try{
 			if(!isPositive(p.getSuperficie())){
@@ -123,6 +123,13 @@ public class ComprobarFase1 extends CerrarFase{
 		p.setUes(ues);
 		
 		return p;
+	}
+
+
+	@Override
+	ArrayList<String> checkPhase(ArrayList<String> msg, Phase pa) {
+		Phase1 p = (Phase1) pa;
+		return msg;
 	}
 
 

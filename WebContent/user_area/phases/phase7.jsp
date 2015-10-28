@@ -1,13 +1,10 @@
+
+<%@page import="controller.wizard.classes.phases.Phase7"%>
+<%@page import="controller.wizard.classes.ParcelaResultante"%>
+<%@page import="java.util.ArrayList"%>
 <%@page import="java.util.TreeSet"%>
 <%@page import="java.util.SortedSet"%>
-<%@page import="controller.wizard.classes.phases.Phase1"%>
-<%@page import="java.util.Arrays"%>
-<%@page import="com.mysql.fabric.xmlrpc.base.Array"%>
-<%@page import="java.util.Map.Entry"%>
-<%@page import="java.util.Map"%>
-<%@page import="java.util.Iterator"%>
-<%@page import="controller.wizard.classes.Municipio"%>
-<%@page import="java.util.ArrayList"%>
+<%@page import="controller.wizard.classes.phases.Phase5"%>
 <%@page import="controller.wizard.classes.Plan"%>
 <%@page import="controller.Configuracion"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
@@ -18,29 +15,8 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 		<link rel="stylesheet" href="<%=Configuracion.getInstance().getRoot()%>css/style.css" type="text/css">
-		<title>Datos generales</title>
+		<title>Ordenación urbanística pormenorizada P.2.</title>
 		<script src="<%=Configuracion.getInstance().getRoot()%>js/jquery-1.11.1.js"></script>
-		<script type="text/javascript">
-		    $(document).ready(function() {
-
-		    	var ueNumber = document.getElementById("ues").rows.length -1;
-
-		        $("#add").click(function() {
-		          ueNumber = ueNumber +1;
-		          $('#ues tr:last').clone(true).insertAfter('#ues tr:last');
-		          $('#ues tr:last').replaceWith('<tr><td><button type="button" class="erase">borrar</button></td><td>UE'+ueNumber+'</td><td><input name="UE'+ueNumber+'" type="number" ></td></tr>');
-		          return false;
-		        });
-		       
-		        $(document).on("click", ".erase", function() {
-		        	$(this).parent().parent().remove();
-			    });
-		        
-		        
-		        
-		        
-		    });
-		</script>
 		<script>
 			function transferCallToServlet(fase, id)
 			{
@@ -51,6 +27,19 @@
 				
 			}
 		</script>
+
+		<script type="text/javascript">
+		    $(document).ready(function() {
+
+		    	$('input').on('input',function(e){
+		    	
+		    		//var pt = $( this ).parent().parent().parent().parent().get(0).tagName;
+		    		//alert(pt);
+		    		
+		    	});
+		    });
+		</script>
+
 		
 		
 	</head>
@@ -61,8 +50,9 @@
 		<div class="marginNavbarUser"></div>
 		<div class = "contentWrapper white">
 			<div id="body">
+				
 				<%String estadoFase[] = (String[])request.getAttribute("estadoFase");%>
-				<% Phase1 p = (Phase1)request.getAttribute("phase1");%>
+				<% Phase7 p = (Phase7)request.getAttribute("phase7");%>
 				
 				<div class="phase">
 					<form name="requestForm" method="POST">
@@ -94,114 +84,61 @@
 						</div>
 					</form>
 					<div class="content">
-						<% ArrayList<Municipio> municipios = (ArrayList<Municipio>)request.getAttribute("municipios"); %>
+				
 						
-						
-						<h1>DATOS GENERALES</h1>
-						<h2>DEL PLAN PARCIAL</h2>
+						<h1>Edificabilidad urbanística correspondiente al ayuntamiento</h1>
+				
 						<form method="POST" action="<%=Configuracion.getInstance().getRoot()%>user_area/check_phase" >
-							<p>Denominación del plan parcial</p>
-							<input type="text" name="denominacion_plan" value="<%=p.getDenominacionPlan() %>">
-							<p>Denominación del sector (número sector)</p>
-							<input type="text" name="denominacion_sector" value="<%=p.getDenominacionSector() %>">
-							<input type="number" name="numero_sector" value="<%=p.getNumeroSector() %>">
-							<p>Municipio</p>
-							<select name="municipio">
-							  	<%for(int i = 0; i < municipios.size(); i++){%>
-							  		<option value="<%=municipios.get(i).getMunicipio()%>" <%
-							  		if(p.getMunicipio() != null){
-							  			if(p.getMunicipio().equals(municipios.get(i).getMunicipio())) {
-							  				%>
-							  				selected
-							  				<%
-							  			}
-							  		}
-							  		%>><%=municipios.get(i).getMunicipio() %></option>
-							  	<%} %>
-				  			</select>
-				  			<p>Superficie del ámbito</p>
-							<input type="number" name="superficie" value="<%=p.getSuperficie() %>">
-				  			<p>Idioma</p>
-							<select name="idioma">
+
+							<%
+							SortedSet<Integer> keys = new TreeSet<Integer>(p.getUes().keySet());
+							for(Integer key : keys){
+							%>
+							<div class="unidadEjecucion">
+							
+								<h2><%=p.getUes().get(key).getDenominacion() %></h2>
+								<table>
+									<tr>
+										<td>Edificabilidad mínima correspondiente al ayuntamiento</td>
+										<td><%=p.getParticipacionAyuntamiento() * p.getUes().get(key).getEdificabilidadPonderada() %></td>
+									</tr>
+								</table>
 								
-								<%
-								if(p.getIdioma() != null){
-									if(p.getIdioma().equals("Castellano")){ %>
-									  	<option value="Castellano" selected>Castellano</option>
-									  	<option value="Euskara">Euskara</option>
-							  		<%} else{ %>
-									  	<option value="Castellano">Castellano</option>
-									  	<option value="Euskara" selected>Euskara</option>
-							  		<%} %>
-								<%} else{%>
-									<option value="Castellano">Castellano</option>
-									<option value="Euskara">Euskara</option>
-								<%} %>
-				  			</select>
-				  			
-				  			<p>Marco legal</p>
-				  			
-				  			<select name="ML">
-								<%
-								SortedSet<Integer> keys3 = new TreeSet<Integer>(p.getMarcosLegales().keySet());
-								for(Integer key3 : keys3){
-									if(key3 == p.getIdMarcoLegal()){
-									%>
-										<option value="<%=key3 %>" selected><%=p.getMarcosLegales().get(key3) %></option>
-									<%	
-									}
-									else{
-									%>
-										<option value="<%=key3 %>"><%=p.getMarcosLegales().get(key3) %></option>
-									<%
-									}
-									
-								}
-								%>
-							</select>
-				  			
-				  			
-				  			<h2>UNIDADES DE EJECUCIÓN</h2>
-				  			
-				  			<table id="ues">
-				  				<tr>
-				  					<th></th>
-				  					<th>Nombre</th>
-				  					<th>Número de parcelas</th>
-				  				</tr>
-				  				
-				  				
-				  				<%if(p.getUes().size() == 0){%>
-				  					<tr>
-				  						<td><button type="button" class="erase">borrar</button></td>
-					  					<td>UE1</td>
-						  				<td><input name="UE1" type="number" ></td>
+								<table class="ue">
+									<tr>
+					  					<th>Denominación</th>
+					  					<th>Edificabilidad ponderada</th>
+					  					<th>Porcentaje correspondiente al ayuntamiento</th>
 					  				</tr>
-				  				<%} else{	
-				  					
-				  						Object [] keys = p.getUes().keySet().toArray();
-				  						Arrays.sort(keys);
-				  					
-				  						for(Object key : keys){%>
-											<tr>
-						  						<td><button type="button" class="erase" >borrar</button></td>
-						  						<td><%=key %></td>
-							  					<td><input name="<%=key%>" type="number" value="<%=p.getUes().get(key)%>" ></td>
-						  					</tr>	
-					  						
-					  					<%}
-				  								  				
-				  					}%>
-				  				
-				  				
-				  			</table>
-				  			<button type="button" id="add">Añadir UE</button>
-				  			
-				  			<input type="hidden" name="phase" value="1">
-				  			<input class="button" type="submit" value="Comprobar y guardar">
-				  			
+					  				
+					  				<%
+									SortedSet<Integer> keys2 = new TreeSet<Integer>(p.getParcelas().get(key).keySet());
+									for(Integer key2 : keys2){
+									%>
+					  				
+						  				<tr>
+											<td><%=p.getParcelas().get(key).get(key2).getDenominacion() %></td>
+											<td><%=p.getParcelas().get(key).get(key2).getEdificabilidadPonderada() %></td>
+						  					<td><input class="input" name="PR<%=p.getParcelas().get(key).get(key2).getIdParcelaResultante() %>:porcentaje" step="any" type="number" value="<%=p.getParcelas().get(key).get(key2).getPorcentajeAyuntamiento() %>" ></td>
+						  				</tr>
+					  				
+					  				<%
+									}
+					  				%>
+					  				
+								</table>
+								
+							</div>	
+							<%	
+							}
+							%>
+						
+							<input type="hidden" name="phase" value="7">
+					  		<input class="button" type="submit" value="Comprobar y guardar">
+						
 						</form>
 						
+								
 						
 						<%if(request.getAttribute("msg") != null){ 
 							 ArrayList<String> msg = (ArrayList<String>)request.getAttribute("msg"); 
@@ -214,6 +151,7 @@
 							<%}%>
 							 	</div>
 						<%}%>
+		
 					    
 					</div>
 					<div class="clear"></div>

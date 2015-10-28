@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import controller.errores.SQLError;
 import controller.wizard.classes.OrdenacionUrbanisticaEstructural;
-import controller.wizard.classes.P5UnidadEjecucion;
+import controller.wizard.classes.P567UnidadEjecucion;
 import controller.wizard.classes.ParcelaResultante;
 import controller.wizard.classes.phases.Phase;
 import controller.wizard.classes.phases.Phase2;
@@ -28,7 +28,7 @@ public class ComprobarFase5 extends CerrarFase{
 
 
 	@Override
-	ArrayList<String> checkPhase() {
+	ArrayList<String> checkData() {
 		// TODO Auto-generated method stub
 		ArrayList<String> cf = new ArrayList<String>();
 		boolean errorSuperficie = false;
@@ -166,4 +166,10 @@ public class ComprobarFase5 extends CerrarFase{
 		}
 	}
 
+	@Override
+	ArrayList<String> checkPhase(ArrayList<String> msg, Phase pa) {
+		// TODO Auto-generated method stub
+		return msg;
+	}
+	
 }

@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import controller.errores.SQLError;
 import controller.wizard.classes.phases.Phase;
 import model.Dao;
 
@@ -24,24 +25,36 @@ public abstract class CerrarFase {
 		dao = new Dao();
 	}
 	
-	abstract ArrayList<String> checkPhase();
+	abstract ArrayList<String> checkData();
+	abstract ArrayList<String> checkPhase(ArrayList<String> msg, Phase pa);
 	abstract void update(Phase p);
 	abstract void updateIncorrectPhase(Phase p);
 	abstract Phase loadedPhase();
 	abstract Phase correctedPhase();
 	
+	
 	public void execute() throws ServletException, IOException, SQLException{
 		
 		Phase p = null;
-		ArrayList<String> msg = checkPhase();
+		ArrayList<String> msg = checkData();
+		
 		if(msg.size() == 0){
 			p = loadedPhase();
-			update(p);
 		}
 		else{
 			p = correctedPhase();
+		}
+
+		msg = checkPhase(msg, p);
+
+		if(msg.size() == 0){
+			update(p);
+		}
+		else{
 			updateIncorrectPhase(p);
 		}
+		
+		updateLastModDate(p.getIdPlan());
 		
 		attributeLoad(p, msg);
 		
@@ -104,6 +117,14 @@ public abstract class CerrarFase {
 			request.setAttribute("id", p.getIdPlan());
 			request.setAttribute("msg", msg);
 			request.setAttribute("phase", p);
+		}
+	}
+	
+	public void updateLastModDate(int idPlan){
+		try {
+			dao.getProgram().updateLastModDate(idPlan);
+		} catch (SQLException e) {
+			new SQLError(request, response, e);
 		}
 	}
 

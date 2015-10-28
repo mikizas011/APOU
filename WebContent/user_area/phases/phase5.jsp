@@ -1,7 +1,7 @@
 
 <%@page import="controller.wizard.classes.ParcelaResultante"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="controller.wizard.classes.P5UnidadEjecucion"%>
+<%@page import="controller.wizard.classes.P567UnidadEjecucion"%>
 <%@page import="java.util.TreeSet"%>
 <%@page import="java.util.SortedSet"%>
 <%@page import="controller.wizard.classes.phases.Phase5"%>
@@ -81,7 +81,7 @@
 
 							SortedSet<Integer> keys = new TreeSet<Integer>(p.getMap().keySet());
 							for(Integer key : keys){
-								P5UnidadEjecucion ue = p.getMap().get(key);
+								P567UnidadEjecucion ue = p.getMap().get(key);
 								%>
 								
 								<div class="unidadEjecucion">

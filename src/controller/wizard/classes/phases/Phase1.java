@@ -1,16 +1,17 @@
 package controller.wizard.classes.phases;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Phase1 extends Phase{
 
 	private String denominacionPlan, denominacionSector, numeroSector, Municipio, idioma, superficie;
 	private HashMap<String, String> ues;
+	private HashMap<Integer, String> marcosLegales;
+	private int idMarcoLegal;
 	
 	public Phase1(int idPlan, String denominacionPlan,
 			String denominacionSector, String numeroSector, String municipio,
-			String idioma, String superficie, HashMap<String, String> ues) {
+			String idioma, String superficie, int idMarcoLegal) {
 		super(idPlan);
 		this.denominacionPlan = denominacionPlan;
 		this.denominacionSector = denominacionSector;
@@ -18,7 +19,7 @@ public class Phase1 extends Phase{
 		Municipio = municipio;
 		this.idioma = idioma;
 		this.superficie = superficie;
-		this.ues = ues;
+		this.setIdMarcoLegal(idMarcoLegal);
 	}
 
 	public String getDenominacionPlan() {
@@ -62,6 +63,22 @@ public class Phase1 extends Phase{
 	}
 	public void setUes(HashMap<String, String> ues) {
 		this.ues = ues;
+	}
+
+	public HashMap<Integer, String> getMarcosLegales() {
+		return marcosLegales;
+	}
+
+	public void setMarcosLegales(HashMap<Integer, String> marcosLegales) {
+		this.marcosLegales = marcosLegales;
+	}
+
+	public int getIdMarcoLegal() {
+		return idMarcoLegal;
+	}
+
+	public void setIdMarcoLegal(int idMarcoLegal) {
+		this.idMarcoLegal = idMarcoLegal;
 	}
 	
 	

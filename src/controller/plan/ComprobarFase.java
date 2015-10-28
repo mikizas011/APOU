@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 
 
 
+
+
 import model.Dao;
 import controller.errores.SQLError;
 import controller.plan.comprobadores.ComprobarFase1;
@@ -29,6 +31,8 @@ import controller.plan.comprobadores.ComprobarFase2;
 import controller.plan.comprobadores.ComprobarFase3;
 import controller.plan.comprobadores.ComprobarFase4;
 import controller.plan.comprobadores.ComprobarFase5;
+import controller.plan.comprobadores.ComprobarFase6;
+import controller.plan.comprobadores.ComprobarFase7;
 import controller.wizard.classes.Municipio;
 import controller.wizard.classes.phases.Phase1;
 
@@ -61,6 +65,9 @@ public class ComprobarFase extends HttpServlet {
 				case 3: new ComprobarFase3(request, response).execute(); break;
 				case 4: new ComprobarFase4(request, response).execute(); break;
 				case 5: new ComprobarFase5(request, response).execute(); break;
+				case 6: new ComprobarFase6(request, response).execute(); break;
+				case 7: new ComprobarFase7(request, response).execute(); break;
+//				case 8: new ComprobarFase8(request, response).execute(); break;
 			}
 		} catch (SQLException e) {
 			new SQLError(request, response, e);

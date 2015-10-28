@@ -4,10 +4,17 @@ public class ParcelaResultante {
 
 	private int idParcelaResultante, idTipoOrdenacionPormenorizada, idUnidadEjecucion;
 	private String denominacion, tipoOrdenacionPormenorizada;
-	private double superficie, obrA, obrN, osrA, osrN, ebrA, ebrN, esrpbA, esrpbN, esrppA, esrppN, porcentajeAyuntamiento;
+	private double superficie, obrA, obrN, osrA, osrN, ebrA, ebrN, esrpbA, esrpbN, esrppA, esrppN, porcentajeAyuntamiento, edificabilidadPonderada;
 	
 	
 	
+	
+	public ParcelaResultante(int idParcelaResultante, String denominacion, double edificabilidadPonderada, double porcentajeAyuntamiento){
+		this.idParcelaResultante = idParcelaResultante;
+		this.denominacion = denominacion;
+		this.edificabilidadPonderada = edificabilidadPonderada;
+		this.porcentajeAyuntamiento = porcentajeAyuntamiento;
+	}
 	
 	public ParcelaResultante(int idTipoOrdenacionPormenorizada,
 			int idUnidadEjecucion, int numeroUnidadEjecucion, int numeroParcela, double superficie,
@@ -30,6 +37,24 @@ public class ParcelaResultante {
 		this.esrppA = esrppA;
 		this.esrppN = esrppN;
 	}
+
+
+	
+	public ParcelaResultante(int idParcelaResultante, String denominacion,
+			int idTipoOrdenacionPormenorizada, int idUnidadEjecucion,
+			double ebrN, double esrpbN, double esrppN, double porcentajeAyuntamiento) {
+		super();
+		this.idParcelaResultante = idParcelaResultante;
+		this.idTipoOrdenacionPormenorizada = idTipoOrdenacionPormenorizada;
+		this.idUnidadEjecucion = idUnidadEjecucion;
+		this.ebrN = ebrN;
+		this.esrpbN = esrpbN;
+		this.esrppN = esrppN;
+		this.denominacion =denominacion;
+		this.porcentajeAyuntamiento = porcentajeAyuntamiento;
+	}
+
+
 
 	public ParcelaResultante(int idParcelaResultante,
 			int idTipoOrdenacionPormenorizada, int idUnidadEjecucion,
@@ -191,6 +216,14 @@ public class ParcelaResultante {
 
 	public void setTipoOrdenacionPormenorizada(String tipoOrdenacionPormenorizada) {
 		this.tipoOrdenacionPormenorizada = tipoOrdenacionPormenorizada;
+	}
+
+	public double getEdificabilidadPonderada() {
+		return edificabilidadPonderada;
+	}
+
+	public void setEdificabilidadPonderada(double edificabilidadPonderada) {
+		this.edificabilidadPonderada = edificabilidadPonderada;
 	}
 	
 	

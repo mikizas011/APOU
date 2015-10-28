@@ -1,6 +1,5 @@
 package model.category;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,21 +7,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import controller.Configuracion;
 import controller.wizard.classes.Municipio;
 import controller.wizard.classes.OrdenacionUrbanisticaEstructural;
 import controller.wizard.classes.OrdenacionUrbanisticaPormenorizada;
 import controller.wizard.classes.P2unidadEjecucion;
-import controller.wizard.classes.P5UnidadEjecucion;
+import controller.wizard.classes.P567UnidadEjecucion;
 import controller.wizard.classes.ParcelaAportada;
 import controller.wizard.classes.ParcelaResultante;
-import controller.wizard.classes.Plan;
 import controller.wizard.classes.UnidadEjecucion;
 import controller.wizard.classes.phases.Phase1;
 import controller.wizard.classes.phases.Phase2;
 import controller.wizard.classes.phases.Phase3;
 import controller.wizard.classes.phases.Phase4;
 import controller.wizard.classes.phases.Phase5;
+import controller.wizard.classes.phases.Phase6;
+import controller.wizard.classes.phases.Phase7;
+import controller.wizard.classes.phases.Phase8;
 import model.Dao;
 
 public class DaoWizard {
@@ -73,6 +73,9 @@ public class DaoWizard {
 				case 3: sql = "fase_3_correct = 1, fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
 				case 4: sql = "fase_4_correct = 1, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
 				case 5: sql = "fase_5_correct = 1, fase_6_correct = 1, fase_7_correct = 0, fase_8_correct = 0"; break;
+				case 6: sql = "fase_6_correct = 1, fase_7_correct = 0, fase_8_correct = 0"; break;
+				case 7: sql = "fase_7_correct = 1, fase_8_correct = 0"; break;
+				case 8: sql = "fase_8_correct = 1"; break;
 			}
 			
 			sql = "UPDATE plan SET " + sql + ", fase = ? WHERE id_plan = " + plan;
@@ -95,6 +98,9 @@ public class DaoWizard {
 				case 3: sql = "fase_3_correct = 0, fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
 				case 4: sql = "fase_4_correct = 0, fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
 				case 5: sql = "fase_5_correct = 0, fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
+				case 6: sql = "fase_6_correct = 0, fase_7_correct = 0, fase_8_correct = 0"; break;
+				case 7: sql = "fase_7_correct = 0, fase_8_correct = 0"; break;
+				case 8: sql = "fase_8_correct = 0"; break;
 			}
 			
 			sql = "UPDATE plan SET " + sql + ", fase = ? WHERE id_plan = " + plan;
@@ -142,7 +148,7 @@ public class DaoWizard {
 	
 	public Phase1 getPhase1(int idPlan) throws SQLException{
 		
-		String sql = "SELECT id_plan, denominacion, nombre_sector, numero_sector, municipio, idioma, superficie FROM plan WHERE id_plan = "+idPlan;
+		String sql = "SELECT id_plan, denominacion, nombre_sector, numero_sector, municipio, idioma, superficie, id_marco_legal FROM plan WHERE id_plan = "+idPlan;
 
 		PreparedStatement statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
 
@@ -151,7 +157,7 @@ public class DaoWizard {
 		Phase1 p = null;
 		
 		if(rs.next()){
-			p = new Phase1(rs.getInt("id_plan"), rs.getString("denominacion"), rs.getString("nombre_sector"), rs.getString("numero_sector"), rs.getString("municipio"), rs.getString("idioma"), rs.getDouble("superficie")+"", null);
+			p = new Phase1(rs.getInt("id_plan"), rs.getString("denominacion"), rs.getString("nombre_sector"), rs.getString("numero_sector"), rs.getString("municipio"), rs.getString("idioma"), rs.getDouble("superficie")+"", rs.getInt("id_marco_legal"));
 		}
 		
 		HashMap<String, String> ues = new HashMap<String, String>();
@@ -168,6 +174,20 @@ public class DaoWizard {
 		
 		p.setUes(ues);
 		
+		HashMap<Integer, String> marcosLegales = new HashMap<Integer, String>();
+		
+		sql = "SELECT id_marco_legal, denominacion FROM marco_legal";
+
+		statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+		
+		rs = statement.executeQuery();
+		
+		while(rs.next()){
+			marcosLegales.put(rs.getInt("id_marco_legal"), rs.getString("denominacion"));
+		}
+		
+		p.setMarcosLegales(marcosLegales);
+		
 		return p;
 		
 	}
@@ -175,7 +195,7 @@ public class DaoWizard {
 	public void updatePhase1(Phase1 p) throws SQLException{
 		
 		//Modificar datos del plan
-		String sql = "UPDATE plan SET denominacion = ?, nombre_sector = ?, numero_sector = ?, municipio = ?, idioma = ?, superficie = ? WHERE id_plan = " + p.getIdPlan();
+		String sql = "UPDATE plan SET denominacion = ?, nombre_sector = ?, numero_sector = ?, municipio = ?, idioma = ?, superficie = ?, id_marco_legal = ? WHERE id_plan = " + p.getIdPlan();
 		
 		PreparedStatement statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
 		
@@ -185,6 +205,7 @@ public class DaoWizard {
 		statement.setString(4, p.getMunicipio());
 		statement.setString(5, p.getIdioma());
 		statement.setDouble(6, Double.parseDouble(p.getSuperficie()));
+		statement.setInt(7, p.getIdMarcoLegal());
 
 		statement.execute();
 		
@@ -470,7 +491,6 @@ public class DaoWizard {
 			
 			String sql;
 			PreparedStatement statement;
-			ResultSet rs;
 			
 			sql = "UPDATE plan SET edif_max_sr = ?, edif_max_br = ? WHERE id_plan = ?"; 
 			statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
@@ -671,10 +691,10 @@ public class DaoWizard {
 			
 			rs = statement.executeQuery();
 			
-			HashMap<Integer, P5UnidadEjecucion> map = new HashMap<Integer, P5UnidadEjecucion>();
+			HashMap<Integer, P567UnidadEjecucion> map = new HashMap<Integer, P567UnidadEjecucion>();
 			
 			while(rs.next()){
-				map.put(rs.getInt("id_unidad_ejecucion"), new P5UnidadEjecucion(rs.getString("denominacion"), rs.getInt("id_unidad_ejecucion"), idPlan));
+				map.put(rs.getInt("id_unidad_ejecucion"), new P567UnidadEjecucion(rs.getString("denominacion"), rs.getInt("id_unidad_ejecucion"), idPlan));
 			}
 			
 			//Obtenemos los tipos de ordenacion pormenorizados
@@ -711,9 +731,8 @@ public class DaoWizard {
 			
 			String sql;
 			PreparedStatement statement;
-			ResultSet rs;
 			
-			for(Entry <Integer, P5UnidadEjecucion> entry : p.getMap().entrySet()){
+			for(Entry <Integer, P567UnidadEjecucion> entry : p.getMap().entrySet()){
 				
 				for(Entry <Integer, ParcelaResultante> pr : entry.getValue().getParcelas().entrySet()){
 
@@ -744,4 +763,168 @@ public class DaoWizard {
 		
 		//FIN FASE 5
 		
+		//FASE 6
+		
+				public Phase6 getPhase6(int idPlan) throws SQLException{
+					
+					String sql;
+					PreparedStatement statement;
+					ResultSet rs;
+					
+					
+					//Obtenemos el numero de unidades de ejecución que hay en un plan y la información de cada una de ellas.
+					sql = "SELECT id_unidad_ejecucion, denominacion FROM unidad_ejecucion WHERE id_plan = " + idPlan;
+					
+					statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+					
+					rs = statement.executeQuery();
+					
+					HashMap<Integer, P567UnidadEjecucion> map = new HashMap<Integer, P567UnidadEjecucion>();
+					
+					while(rs.next()){
+						map.put(rs.getInt("id_unidad_ejecucion"), new P567UnidadEjecucion(rs.getString("denominacion"), rs.getInt("id_unidad_ejecucion"), idPlan));
+					}
+					
+					//Obtenemos los tipos de ordenacion pormenorizados
+					sql = "SELECT id_tipo_ordenacion_pormenorizada, denominacion, coef_srpb, coef_srpp, coef_br FROM tipo_ordenacion_pormenorizada WHERE id_plan = " + idPlan;
+					
+					statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+					
+					rs = statement.executeQuery();
+					
+					HashMap<Integer, OrdenacionUrbanisticaPormenorizada> tipos = new HashMap<Integer, OrdenacionUrbanisticaPormenorizada>();
+					
+					while(rs.next()){
+						tipos.put(rs.getInt("id_tipo_ordenacion_pormenorizada"), new OrdenacionUrbanisticaPormenorizada(rs.getString("denominacion"), rs.getDouble("coef_srpb"), rs.getDouble("coef_srpp"), rs.getDouble("coef_br"), rs.getInt("id_tipo_ordenacion_pormenorizada")));
+					}
+					
+					//Obtenemos las parcelas resultantes
+					sql = "SELECT pr.id_unidad_ejecucion, pr.denominacion, pr.id_parcela_resultante, pr.id_tipo_ordenacion_pormenorizada, pr.ebr_n, pr.esrpb_n, pr.esrpp_n, pr.porcentaje_ayuntamiento FROM parcela_resultante pr, unidad_ejecucion ue WHERE ue.id_unidad_ejecucion = pr.id_unidad_ejecucion AND ue.id_plan = " + idPlan;
+										
+					statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+					
+					rs = statement.executeQuery();
+					
+					while(rs.next()){
+						map.get(rs.getInt("pr.id_unidad_ejecucion")).getParcelas().put(rs.getInt("pr.id_parcela_resultante"), new ParcelaResultante(rs.getInt("pr.id_parcela_resultante"), rs.getString("pr.denominacion"), rs.getInt("pr.id_tipo_ordenacion_pormenorizada"), rs.getInt("pr.id_unidad_ejecucion"), rs.getDouble("pr.ebr_n"), rs.getDouble("pr.esrpb_n"), rs.getDouble("pr.esrpp_n"), rs.getDouble("porcentaje_ayuntamiento")));
+					}
+					
+					Phase6 p = new Phase6(idPlan, map, tipos);
+										
+					return p;		
+				}
+				
+				//FIN FASE 6
+				
+				//FASE 7
+				
+				public Phase7 getPhase7(int idPlan) throws SQLException{
+					
+					String sql;
+					PreparedStatement statement;
+					ResultSet rs;
+					
+					
+					//Obtenemos el numero de unidades de ejecución que hay en un plan y la información de cada una de ellas.
+					sql = "SELECT id_unidad_ejecucion, denominacion FROM unidad_ejecucion WHERE id_plan = " + idPlan;
+					
+					statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+					
+					rs = statement.executeQuery();
+					
+					HashMap<Integer, P567UnidadEjecucion> map = new HashMap<Integer, P567UnidadEjecucion>();
+					
+					while(rs.next()){
+						map.put(rs.getInt("id_unidad_ejecucion"), new P567UnidadEjecucion(rs.getString("denominacion"), rs.getInt("id_unidad_ejecucion"), idPlan));
+					}
+					
+					//Obtenemos los tipos de ordenacion pormenorizados
+					sql = "SELECT id_tipo_ordenacion_pormenorizada, denominacion, coef_srpb, coef_srpp, coef_br FROM tipo_ordenacion_pormenorizada WHERE id_plan = " + idPlan;
+					
+					statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+					
+					rs = statement.executeQuery();
+					
+					HashMap<Integer, OrdenacionUrbanisticaPormenorizada> tipos = new HashMap<Integer, OrdenacionUrbanisticaPormenorizada>();
+					
+					while(rs.next()){
+						tipos.put(rs.getInt("id_tipo_ordenacion_pormenorizada"), new OrdenacionUrbanisticaPormenorizada(rs.getString("denominacion"), rs.getDouble("coef_srpb"), rs.getDouble("coef_srpp"), rs.getDouble("coef_br"), rs.getInt("id_tipo_ordenacion_pormenorizada")));
+					}
+					
+					//Obtenemos las parcelas resultantes
+					sql = "SELECT pr.id_unidad_ejecucion, pr.denominacion, pr.id_parcela_resultante, pr.id_tipo_ordenacion_pormenorizada, pr.ebr_n, pr.esrpb_n, pr.esrpp_n, pr.porcentaje_ayuntamiento FROM parcela_resultante pr, unidad_ejecucion ue WHERE ue.id_unidad_ejecucion = pr.id_unidad_ejecucion AND ue.id_plan = " + idPlan;
+										
+					statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+					
+					rs = statement.executeQuery();
+					
+					while(rs.next()){
+						map.get(rs.getInt("pr.id_unidad_ejecucion")).getParcelas().put(rs.getInt("pr.id_parcela_resultante"), new ParcelaResultante(rs.getInt("pr.id_parcela_resultante"), rs.getString("pr.denominacion"), rs.getInt("pr.id_tipo_ordenacion_pormenorizada"), rs.getInt("pr.id_unidad_ejecucion"), rs.getDouble("pr.ebr_n"), rs.getDouble("pr.esrpb_n"), rs.getDouble("pr.esrpp_n"), rs.getDouble("porcentaje_ayuntamiento")));
+					}
+					
+					sql = "SELECT ml.participacion_ayuntamiento FROM marco_legal ml, plan p WHERE p.id_marco_legal = ml.id_marco_legal AND p.id_plan = " + idPlan;
+					
+					statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+					
+					rs = statement.executeQuery();
+					
+					double participacionAyuntamiento = 0.0;
+					
+					if(rs.next()){
+						participacionAyuntamiento = rs.getDouble("ml.participacion_ayuntamiento");	
+					}
+					
+					Phase7 p = new Phase7(idPlan, map, tipos, participacionAyuntamiento);
+										
+					return p;		
+				}
+				
+				public void updatePhase7(Phase7 p) throws SQLException{
+					
+					String sql;
+					PreparedStatement statement;
+					
+					for(Entry <Integer, HashMap<Integer, ParcelaResultante>> entry : p.getParcelas().entrySet()){
+						for(Entry <Integer, ParcelaResultante> pr : entry.getValue().entrySet()){
+
+							sql = "UPDATE parcela_resultante SET porcentaje_ayuntamiento = ? WHERE id_parcela_resultante = ?";  
+							statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+							statement.setDouble(1, pr.getValue().getPorcentajeAyuntamiento());
+							statement.setInt(2, pr.getValue().getIdParcelaResultante());
+							statement.execute();
+						}
+					}
+		
+				}
+					
+				//FIN FASE 7
+				
+				//FASE 8
+				
+				public Phase8 getPhase8(int idPlan) throws SQLException{
+					
+					String sql;
+					PreparedStatement statement;
+					ResultSet rs;
+					
+					
+					//Obtenemos el numero de unidades de ejecución que hay en un plan y la información de cada una de ellas.
+					sql = "SELECT id_unidad_ejecucion, denominacion, superficie_espacios_libres, superficie_equipamientos, superficie_red_viaria, numero_plazas_aparcamiento FROM unidad_ejecucion WHERE id_plan = " + idPlan;
+					
+					statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+					
+					rs = statement.executeQuery();
+					
+					HashMap<Integer, UnidadEjecucion> map = new HashMap<Integer, UnidadEjecucion>();
+					
+					while(rs.next()){
+						map.put(rs.getInt("id_unidad_ejecucion"), new UnidadEjecucion(rs.getDouble("superficie_espacios_libres"), rs.getDouble("superficie_equipamientos"), rs.getDouble("superficie_red_viaria"), rs.getInt("numero_plazas_aparcamiento"), rs.getString("denominacion"), rs.getInt("id_unidad_ejecucion")));
+					}
+					
+					Phase8 p = new Phase8(idPlan, map);
+										
+					return p;		
+				}
+				
+				//FIN FASE 8
 }

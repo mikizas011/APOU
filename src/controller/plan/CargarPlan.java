@@ -25,6 +25,9 @@ import controller.wizard.classes.phases.Phase2;
 import controller.wizard.classes.phases.Phase3;
 import controller.wizard.classes.phases.Phase4;
 import controller.wizard.classes.phases.Phase5;
+import controller.wizard.classes.phases.Phase6;
+import controller.wizard.classes.phases.Phase7;
+import controller.wizard.classes.phases.Phase8;
 import model.Dao;
 
 /**
@@ -116,6 +119,9 @@ public class CargarPlan extends HttpServlet {
 						case 3: phase3(request, response, dao, idPlan, faseActual); break;
 						case 4: phase4(request, response, dao, idPlan, faseActual); break;
 						case 5: phase5(request, response, dao, idPlan, faseActual); break;
+						case 6: phase6(request, response, dao, idPlan, faseActual); break;
+						case 7: phase7(request, response, dao, idPlan, faseActual); break;
+						case 8: phase8(request, response, dao, idPlan, faseActual); break;
 					}
 					
 				} catch (SQLException e) {
@@ -256,6 +262,73 @@ public class CargarPlan extends HttpServlet {
 		request.setAttribute("phase5", p);
 		
 		request.getRequestDispatcher("/user_area/phases/phase5.jsp").forward(request, response);
+		
+	}
+	
+	public void phase6(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan, int faseActual) throws SQLException, ServletException, IOException{
+		
+		
+		
+		Phase6 p = dao.getWizard().getPhase6(idPlan);
+	
+		p.setFase(faseActual);
+
+		dao.close();
+		dao = null;
+		
+		request.setAttribute("phase6", p);
+		
+		request.getRequestDispatcher("/user_area/phases/phase6.jsp").forward(request, response);
+		
+	}
+	
+	public void phase7(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan, int faseActual) throws SQLException, ServletException, IOException{
+		
+		
+		
+		Phase7 p = null;
+		
+		if((ArrayList<String>) request.getAttribute("msg") != null){
+			p = (Phase7) request.getAttribute("phase");
+		}
+		else{
+			p = dao.getWizard().getPhase7(idPlan);
+		}
+		
+		p.setFase(faseActual);
+
+		
+		dao.close();
+		dao = null;
+		
+		request.setAttribute("phase7", p);
+		
+		request.getRequestDispatcher("/user_area/phases/phase7.jsp").forward(request, response);
+		
+	}
+	
+	public void phase8(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan, int faseActual) throws SQLException, ServletException, IOException{
+		
+		
+		
+		Phase8 p = null;
+		
+		if((ArrayList<String>) request.getAttribute("msg") != null){
+			p = (Phase8) request.getAttribute("phase");
+		}
+		else{
+			p = dao.getWizard().getPhase8(idPlan);
+		}
+		
+		p.setFase(faseActual);
+
+		
+		dao.close();
+		dao = null;
+		
+		request.setAttribute("phase8", p);
+		
+		request.getRequestDispatcher("/user_area/phases/phase8.jsp").forward(request, response);
 		
 	}
 }
