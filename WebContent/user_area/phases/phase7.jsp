@@ -29,20 +29,33 @@
 		</script>
 
 		<script type="text/javascript">
-		    $(document).ready(function() {
-
-		    	$('input').on('input',function(e){
-		    	
-		    		//var pt = $( this ).parent().parent().parent().parent().get(0).tagName;
-		    		//alert(pt);
-		    		
-		    	});
-		    });
+			$(document).ready(function() {
+				$(document).on("input", "input", function() {
+					
+					var existeUE = true;
+					var ue = 1;
+					
+										
+					while($("#UE"+ue).length){
+						var par = 1;
+						var edificabilidad = 0;
+						while($("#PAR"+ue+"\\."+par+"\\:ED").length){
+							var por = $("#PAR"+ue+"\\."+par+"\\:POR").val();
+							var edi = $("#PAR"+ue+"\\."+par+"\\:ED").text();
+							edificabilidad += (por*edi);
+							par++;
+						}
+						$("#UE"+ue).html(edificabilidad);
+						ue++;
+					}
+					
+				});			
+			});
 		</script>
 
-		
-		
-	</head>
+
+
+</head>
 	<body>
 		
 		<jsp:include page="/common/header.jsp" />
@@ -91,8 +104,10 @@
 						<form method="POST" action="<%=Configuracion.getInstance().getRoot()%>user_area/check_phase" >
 
 							<%
+							int ue = 0;
 							SortedSet<Integer> keys = new TreeSet<Integer>(p.getUes().keySet());
 							for(Integer key : keys){
+							ue++;
 							%>
 							<div class="unidadEjecucion">
 							
@@ -101,7 +116,13 @@
 									<tr>
 										<td>Edificabilidad mínima correspondiente al ayuntamiento</td>
 										<td><%=p.getParticipacionAyuntamiento() * p.getUes().get(key).getEdificabilidadPonderada() %></td>
+										
 									</tr>
+									<tr>
+										<td>Edificabilidad asignada al ayuntamiento</td>
+										<td id="UE<%=ue%>"></td>
+									</tr>
+									
 								</table>
 								
 								<table class="ue">
@@ -112,14 +133,16 @@
 					  				</tr>
 					  				
 					  				<%
+					  				int parcela = 0;
 									SortedSet<Integer> keys2 = new TreeSet<Integer>(p.getParcelas().get(key).keySet());
 									for(Integer key2 : keys2){
+									parcela++;
 									%>
 					  				
 						  				<tr>
 											<td><%=p.getParcelas().get(key).get(key2).getDenominacion() %></td>
-											<td><%=p.getParcelas().get(key).get(key2).getEdificabilidadPonderada() %></td>
-						  					<td><input class="input" name="PR<%=p.getParcelas().get(key).get(key2).getIdParcelaResultante() %>:porcentaje" step="any" type="number" value="<%=p.getParcelas().get(key).get(key2).getPorcentajeAyuntamiento() %>" ></td>
+											<td id="PAR<%=ue%>.<%=parcela%>:ED"><%=p.getParcelas().get(key).get(key2).getEdificabilidadPonderada() %></td>
+						  					<td><input id="PAR<%=ue%>.<%=parcela%>:POR" class="input" name="PR<%=p.getParcelas().get(key).get(key2).getIdParcelaResultante() %>:porcentaje" step="any" type="number" value="<%=p.getParcelas().get(key).get(key2).getPorcentajeAyuntamiento() %>" ></td>
 						  				</tr>
 					  				
 					  				<%
@@ -164,6 +187,8 @@
 		  	</div>
 		</div>
 		<jsp:include page="/common/footer.jsp" />
+	
+
 	
 	</body>
 </html>
