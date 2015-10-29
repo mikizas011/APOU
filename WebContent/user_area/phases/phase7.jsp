@@ -32,25 +32,28 @@
 			$(document).ready(function() {
 				$(document).on("input", "input", function() {
 					
-					var existeUE = true;
-					var ue = 1;
-					
-										
-					while($("#UE"+ue).length){
-						var par = 1;
-						var edificabilidad = 0;
-						while($("#PAR"+ue+"\\."+par+"\\:ED").length){
-							var por = $("#PAR"+ue+"\\."+par+"\\:POR").val();
-							var edi = $("#PAR"+ue+"\\."+par+"\\:ED").text();
-							edificabilidad += (por*edi);
-							par++;
-						}
-						$("#UE"+ue).html(edificabilidad);
-						ue++;
-					}
+					calculoDinamico();
 					
 				});			
 			});
+			
+			function calculoDinamico(){
+				var existeUE = true;
+				var ue = 1;
+				while($("#UE"+ue).length){
+					var par = 1;
+					var edificabilidad = 0;
+					while($("#PAR"+ue+"\\."+par+"\\:ED").length){
+						var por = $("#PAR"+ue+"\\."+par+"\\:POR").val();
+						var edi = $("#PAR"+ue+"\\."+par+"\\:ED").text();
+						edificabilidad += (por*edi);
+						par++;
+					}
+					$("#UE"+ue).html(edificabilidad);
+					ue++;
+				}
+			}
+			
 		</script>
 
 
@@ -189,6 +192,6 @@
 		<jsp:include page="/common/footer.jsp" />
 	
 
-	
+	<script type="text/javascript">calculoDinamico();</script>
 	</body>
 </html>
