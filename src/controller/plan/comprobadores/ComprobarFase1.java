@@ -28,7 +28,12 @@ public class ComprobarFase1 extends CerrarFase{
 		
 		Phase1 p1 = (Phase1) p;
 		
+		
 		try {
+			Phase1 aux = dao.getWizard().getPhase1(p.getIdPlan());
+			
+			p1.setMarcosLegales(aux.getMarcosLegales());
+			
 			
 			dao.getWizard().updatePhase1(p1);
 			dao.getWizard().setPhaseIncorrect(p.getIdPlan(), 1);
@@ -103,6 +108,7 @@ public class ComprobarFase1 extends CerrarFase{
 
 	@Override
 	Phase correctedPhase() {
+		
 		Phase1 p = new Phase1((Integer)request.getSession().getAttribute("idPlan"), request.getParameter("denominacion_plan"), request.getParameter("denominacion_sector"), request.getParameter("numero_sector"), request.getParameter("municipio"), request.getParameter("idioma"), request.getParameter("superficie"), Integer.parseInt(request.getParameter("ML")));
 
 		try{
@@ -128,7 +134,7 @@ public class ComprobarFase1 extends CerrarFase{
 
 	@Override
 	ArrayList<String> checkPhase(ArrayList<String> msg, Phase pa) {
-		Phase1 p = (Phase1) pa;
+		
 		return msg;
 	}
 

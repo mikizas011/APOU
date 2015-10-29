@@ -1,8 +1,6 @@
 package controller;
 
-import org.omg.CORBA.Request;
 
-import com.mysql.fabric.Response;
 
 public class Configuracion {
 

@@ -262,7 +262,6 @@ public class DaoWizard {
 		}
 		
 				
-		//Renombramiento de las unidades de ejecución para ordenarlas
 		
 		sql = "SELECT id_unidad_ejecucion, numero_parcelas_aportadas, denominacion FROM unidad_ejecucion WHERE id_plan = " + p.getIdPlan();
 
@@ -332,17 +331,40 @@ public class DaoWizard {
 			}
 		}
 
-		
-//FALTA EL RENOMBRAMIENTO
 
-		
-//		for(int i = 0; i < idsUnidadesEjecucion.size(); i++){
-//			sql = "UPDATE unidad_ejecucion set denominacion = 'UE" + (i+1) + "' WHERE id_unidad_ejecucion = " + idsUnidadesEjecucion.get(i);  
-//			statement = dao.getConection().prepareStatement(sql);
-//			statement.executeUpdate();
-//		}
 
+		sql = "SELECT denominacion, id_unidad_ejecucion FROM unidad_ejecucion WHERE id_plan = " + p.getIdPlan() + " ORDER BY denominacion";
+		statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+		rs = statement.executeQuery();
+		ArrayList<UnidadEjecucion> uds = new ArrayList<UnidadEjecucion>();
+		while(rs.next()){
+			UnidadEjecucion ue = new UnidadEjecucion(0, rs.getString("denominacion"), rs.getInt("id_unidad_ejecucion"));
+			sql = "SELECT denominacion, id_parcela_aportada FROM parcela_aportada WHERE id_unidad_ejecucion = " + rs.getInt("id_unidad_ejecucion") + " ORDER BY denominacion";
+			statement = (PreparedStatement) dao.getConection().prepareStatement(sql);
+			ResultSet rs2 = statement.executeQuery();
+			while(rs2.next()){
+				ue.getParcelasAportadas().add(new ParcelaAportada(rs2.getInt("id_parcela_aportada"), rs2.getString("denominacion")));
+			}
+			uds.add(ue);
+		}
 		
+		for(int i = 0; i < uds.size(); i++){
+			int ueIndex = (i+1);
+			if(!uds.get(i).getDenominacion().equals("UE" + ueIndex)){
+				sql = "UPDATE unidad_ejecucion set denominacion = 'UE" + ueIndex + "' WHERE id_unidad_ejecucion = " + uds.get(i).getIdUnidadEjecucion();  
+				statement = dao.getConection().prepareStatement(sql);
+				statement.executeUpdate();
+			}
+			for(int e = 0; e < uds.get(i).getParcelasAportadas().size(); e++){
+				int parIndex = (e+1);
+				ParcelaAportada aux = uds.get(i).getParcelasAportadas().get(e);
+				if(!aux.getDenominacion().equals("UE" + ueIndex + "PA" + parIndex)){
+					sql = "UPDATE parcela_aportada set denominacion = 'UE" + ueIndex + "PA" + parIndex + "' WHERE id_parcela_aportada = " + aux.getIdParcelaAportada();  
+					statement = dao.getConection().prepareStatement(sql);
+					statement.executeUpdate();				
+				}
+			}
+		}
 		
 		
 		

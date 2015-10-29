@@ -42,6 +42,7 @@ public class UnidadEjecucion {
 		this.numeroParcelasResultantes = numeroParcelasResultantes;
 		this.denominacion = denominacion;
 		this.idUnidadEjecucion = idUnidadEjecucion;
+		parcelasAportadas = new ArrayList<ParcelaAportada>();
 	}
 	
 	public UnidadEjecucion(int idUnidadEjecucion, int numeroParcelasAportadas, String denominacion) {

@@ -8,6 +8,10 @@ public class ParcelaResultante {
 	
 	
 	
+	public ParcelaResultante(int idParcelaResultante, String denominacion){
+		this.idParcelaResultante = idParcelaResultante;
+		this.denominacion = denominacion;
+	}
 	
 	public ParcelaResultante(int idParcelaResultante, String denominacion, double edificabilidadPonderada, double porcentajeAyuntamiento){
 		this.idParcelaResultante = idParcelaResultante;

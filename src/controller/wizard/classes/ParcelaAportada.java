@@ -7,6 +7,10 @@ public class ParcelaAportada {
 	private double superficie;
 	
 	
+	public ParcelaAportada(int idParcelaAportada, String denominacion){
+		this.idParcelaAportada = idParcelaAportada;
+		this.denominacion = denominacion;
+	}
 	
 	public ParcelaAportada(int idParcelaAportada, String denominacion, String propietario,
 			String dominio, int idUnidadEjecucion, double superficie, int idDominio) {
