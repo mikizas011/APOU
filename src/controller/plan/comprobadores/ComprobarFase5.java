@@ -9,8 +9,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import controller.errores.SQLError;
 import controller.wizard.classes.OrdenacionUrbanisticaEstructural;
+import controller.wizard.classes.P2unidadEjecucion;
 import controller.wizard.classes.P567UnidadEjecucion;
+import controller.wizard.classes.ParcelaAportada;
 import controller.wizard.classes.ParcelaResultante;
+import controller.wizard.classes.comprobaciones.Phase5Comp;
 import controller.wizard.classes.phases.Phase;
 import controller.wizard.classes.phases.Phase2;
 import controller.wizard.classes.phases.Phase3;
@@ -38,7 +41,7 @@ public class ComprobarFase5 extends CerrarFase{
 
 			if(entry.getKey().indexOf("PR") != -1){
 				
-				if(!isPositive(request.getParameter(entry.getKey()))){
+				if(!isPositive0Included(request.getParameter(entry.getKey()))){
 					errorSuperficie = true;
 				}
 
@@ -168,7 +171,62 @@ public class ComprobarFase5 extends CerrarFase{
 
 	@Override
 	ArrayList<String> checkPhase(ArrayList<String> msg, Phase pa) {
-		// TODO Auto-generated method stub
+		
+		try {
+			Phase5Comp p5 = dao.getWizard().getPhase5Comp(pa.getIdPlan());
+			Phase5 fase = (Phase5) pa;
+			
+			double superficieSinServidumbres = 0;
+			double superficieTaludes = 0;
+
+			for(P2unidadEjecucion ue : p5.getFase2().getMap().values()){
+				for(ParcelaAportada pap : ue.getParcelas()){
+					superficieSinServidumbres += pap.getSuperficie();
+				}
+				superficieSinServidumbres -= ue.getSuperficieServidumbre();
+				superficieTaludes += ue.getSuperficieTaludes();
+
+			}
+			
+			double ocupacionSRAN = 0;
+			double edificabilidadSRAN = 0;
+			double edificabilidadBRAN = 0;
+			
+			for(P567UnidadEjecucion p567 : fase.getMap().values()){
+				for(ParcelaResultante pr: p567.getParcelas().values()){
+					ocupacionSRAN += pr.getOsrA() + pr.getOsrN();
+					edificabilidadBRAN += pr.getEbrA() + pr.getEbrN();
+					edificabilidadSRAN += pr.getEsrpbA() + pr.getEsrpbN() + pr.getEsrppA() + pr.getEsrppN();
+				}
+			}
+			
+
+			
+			
+			if(!((p5.getOcupacionEdificacion() * superficieSinServidumbres) <= ocupacionSRAN)){
+				msg.add("La suma de las ocupaciones sobre rasante actuales y nuevas ("+(int)ocupacionSRAN+" m2) tienen que ser superior al " + p5.getOcupacionEdificacion()*100 + " % de la suma de las superficies de las parcelas aportadas menos las servidumbres sectoriales de cada unidad de ejecución ("+((int)(p5.getOcupacionEdificacion() * superficieSinServidumbres))+" m2) especificadas en la fase 2.");
+			}
+			
+			if(!(edificabilidadBRAN <= p5.getEdifMaxBR())){
+				msg.add("La suma de edificabilidades actuales y nuevas bajo rasante tiene que ser inferior o igual a la máxima establecida en la fase 3.");
+			}
+			
+			if(!(edificabilidadSRAN <= p5.getEdifMaxSR())){
+				msg.add("La suma de edificabilidades actuales y nuevas sobre rasante tiene que ser inferior o igual a la máxima establecida en la fase 3.");
+			}
+
+			if(!(((superficieSinServidumbres - superficieTaludes) * p5.getFactorOcupacionSuperficieNeta()) >= ocupacionSRAN)){
+				msg.add("La ocupación sobre rasante ("+ocupacionSRAN+") debe ser menor o igual al " + p5.getFactorOcupacionSuperficieNeta()*100 + " % de la superficie del sector menos las servidumbres sectoriales y los taludes ("+(superficieSinServidumbres - superficieTaludes)+").");
+			}
+			
+			if(!(((superficieSinServidumbres - superficieTaludes) * p5.getFactorEdificabilidadSuperficieNeta()) >= edificabilidadSRAN)){
+				msg.add("La edificabilidad sobre rasante ("+edificabilidadSRAN+") debe ser menor o igual al " + p5.getFactorEdificabilidadSuperficieNeta()*100 + " % de la superficie del sector menos las servidumbres sectoriales y los taludes ("+(superficieSinServidumbres - superficieTaludes)+").");
+			}
+			
+		} catch (SQLException e) {
+			new SQLError(request, response, e);
+		}
+		
 		return msg;
 	}
 	

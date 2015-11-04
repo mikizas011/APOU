@@ -57,6 +57,24 @@ public class ParcelaResultante {
 		this.denominacion =denominacion;
 		this.porcentajeAyuntamiento = porcentajeAyuntamiento;
 	}
+	
+	public ParcelaResultante(int idParcelaResultante, String denominacion,
+			int idTipoOrdenacionPormenorizada, int idUnidadEjecucion,
+			double ebrN, double esrpbN, double esrppN, 
+			double ebrA, double esrpbA, double esrppA, double porcentajeAyuntamiento) {
+		super();
+		this.idParcelaResultante = idParcelaResultante;
+		this.idTipoOrdenacionPormenorizada = idTipoOrdenacionPormenorizada;
+		this.idUnidadEjecucion = idUnidadEjecucion;
+		this.ebrN = ebrN;
+		this.esrpbN = esrpbN;
+		this.esrppN = esrppN;
+		this.ebrA = ebrA;
+		this.esrpbA = esrpbA;
+		this.esrppA = esrppA;
+		this.denominacion =denominacion;
+		this.porcentajeAyuntamiento = porcentajeAyuntamiento;
+	}
 
 
 
@@ -228,6 +246,22 @@ public class ParcelaResultante {
 
 	public void setEdificabilidadPonderada(double edificabilidadPonderada) {
 		this.edificabilidadPonderada = edificabilidadPonderada;
+	}
+	
+	public double getObrT(){
+		return getObrN() + getObrA();
+	}
+	public double getOsrT(){
+		return getOsrN() + getOsrA();
+	}
+	public double getEbrT(){
+		return getEbrN() + getEbrA();
+	}
+	public double getEsrpbT(){
+		return getEsrpbN() + getEsrpbA();
+	}
+	public double getEsrppT(){
+		return getEsrppN() + getEsrppA();
 	}
 	
 	

@@ -13,6 +13,7 @@ import controller.wizard.classes.OrdenacionUrbanisticaEstructural;
 import controller.wizard.classes.P567UnidadEjecucion;
 import controller.wizard.classes.ParcelaResultante;
 import controller.wizard.classes.UnidadEjecucion;
+import controller.wizard.classes.comprobaciones.Phase8Comp;
 import controller.wizard.classes.phases.Phase;
 import controller.wizard.classes.phases.Phase2;
 import controller.wizard.classes.phases.Phase3;
@@ -172,6 +173,54 @@ public class ComprobarFase8 extends CerrarFase{
 
 	@Override
 	ArrayList<String> checkPhase(ArrayList<String> msg, Phase pa) {
+		
+		try {
+			Phase8 fase = (Phase8) pa;
+			Phase8Comp p8 = dao.getWizard().getPhase8Comp(pa.getIdPlan());
+			
+			double ocupacionSRNA = 0;
+			double edificabilidadSRBRNA = 0;
+			
+			for(P567UnidadEjecucion p567 : p8.getFase5().getMap().values()){
+				for(ParcelaResultante pr : p567.getParcelas().values()){
+					ocupacionSRNA += pr.getOsrT();
+					edificabilidadSRBRNA += pr.getEsrppT() + pr.getEsrpbT();
+				}
+			}
+			
+			double equipamientos = 0;
+			int numPlazas = 0;
+			double sistemasLocales = 0;
+			double zonasVerdes = 0;
+			
+			for(UnidadEjecucion ue : fase.getUes().values()){
+				equipamientos += ue.getSuperficieEquipamientos();
+				numPlazas += ue.getNumeroPlazasAparcamiento();
+				sistemasLocales += ue.getSuperficieEquipamientos() + ue.getSuperficieEspaciosLibres() + ue.getSuperficieRedViaria();
+				zonasVerdes += ue.getSuperficieEspaciosLibres();
+			}
+			
+			if(!((edificabilidadSRBRNA * p8.getFactorInteresSocial()) <= equipamientos )){
+				msg.add("La suma de equipamientos del sector tiene que ser mayor o igual que el "+p8.getFactorInteresSocial()*100+" % de la suma de las edificabilidades sobre rasante del sector establecidas en la fase 5.");
+			}
+			if(!((edificabilidadSRBRNA * p8.getFactorPlazasAparcamientoM2()) <= numPlazas )){
+				msg.add("Tiene que haber un mínimo de " + (p8.getFactorPlazasAparcamientoM2()*100) + " plazas de aparcamiento por cada 100 metros cuadrados construidos ("+edificabilidadSRBRNA+").");
+			}
+			if(!((p8.getSuperficieSector() * p8.getFactorEquipamientosSector()) >= equipamientos)){
+				msg.add("La superficie destinada a equipamientos tiene que ser mayor o igual que el " + p8.getFactorEquipamientosSector() + " % de la superficie del sector.");
+			}
+			if(!(sistemasLocales >= p8.getSuperficieSector() * p8.getFactorDotacionPublica())){
+				msg.add("La superficie de los sistemas locales tiene que ser superior o igual que el " + p8.getFactorDotacionPublica()*100 + " % de la superficie del sector.");
+			}
+			if(!(zonasVerdes >= p8.getFactorVerdeDotacionPublica() * sistemasLocales)){
+				msg.add("Las zonas verdes ("+zonasVerdes+") tienen que suponer un " + p8.getFactorVerdeDotacionPublica()*100 + " % de los sitemas locales ("+sistemasLocales+")."); 
+			}
+
+		
+		} catch (SQLException e) {
+			new SQLError(request, response, e);
+		}
+		
 		return msg;
 	}
 	

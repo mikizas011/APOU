@@ -84,7 +84,7 @@ public abstract class CerrarFase {
 			if(isNull(s)){
 				return 0.0;
 			}
-			else if((Double) Double.parseDouble(s) <= 0){
+			else if((Double) Double.parseDouble(s) < 0){
 				return 0.0;
 			}
 			return (Double) Double.parseDouble(s);
@@ -100,6 +100,21 @@ public abstract class CerrarFase {
 				return false;
 			}
 			else if((Double) Double.parseDouble(s) <= 0){
+				return false;
+			}
+			return true;
+		}
+		catch(NumberFormatException e){
+			return false;
+		}
+	}
+	
+	public boolean isPositive0Included(String s){
+		try{
+			if(isNull(s)){
+				return false;
+			}
+			else if((Double) Double.parseDouble(s) < 0){
 				return false;
 			}
 			return true;

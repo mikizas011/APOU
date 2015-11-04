@@ -23,7 +23,7 @@
 .planWrapper p{margin-left: 5px;}
 
 
-.phase .phases{float: left; padding-right: 15px;}
+.phase .phases{float: left; padding-right: 15px; }
 .phase .checked{background: rgba(0, 255, 0, 0.3); cursor: pointer;}
 .phase .closed{background: rgba(100, 100, 100, 0.3); }
 .phase .opened{background: white; cursor: pointer;}
@@ -34,10 +34,10 @@
 .phase .phases li a{line-height: 25px; height: 25px; font-size: 14px; display: block;  display: block;}
 .phase .actual a{font-weight: bold; color: black; }
 
-.phase .content{width: 100%; padding-top: 1px;}
+.phase .content{width: 100%; padding-top: 1px; padding-left: 115px;}
 
 .errorfont{font-size: 12px; font-weight: bold;}
-.errormsg{border: 1px solid #bd081c; background-color: rgb(255, 235, 233);}
+.errormsg{border: 1px solid #bd081c; background-color: rgb(255, 235, 233); width: 85%;}
 .errormsg p{padding: 2px 4px;}
 .red{background: rgb(228, 88, 84);}
 .green{background: green;}

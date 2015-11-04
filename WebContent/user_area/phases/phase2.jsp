@@ -147,6 +147,10 @@
 											<th>M2 DE SUPERFICIE DE SUELO CON SERVIDUMBRES SECTORIALES</th>
 											<td><input name="<%=ue.getDenominacion() + ":servidumbre" %>" type="number" value="<%=ue.getSuperficieServidumbre() %>" ></td>
 										</tr>
+										<tr>
+											<th>M2 DE SUPERFICIE DE TALUDES</th>
+											<td><input name="<%=ue.getDenominacion() + ":taludes" %>" type="number" value="<%=ue.getSuperficieTaludes() %>" ></td>
+										</tr>
 									</table>
 									<input name="<%=ue.getDenominacion() + ":idUe" %>" type="hidden" value="<%=ue.getIdUnidadEjecucion() %>">
 									

@@ -12,22 +12,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 import model.Dao;
 import controller.errores.SQLError;
 import controller.plan.comprobadores.ComprobarFase1;
+import controller.plan.comprobadores.ComprobarFase10;
 import controller.plan.comprobadores.ComprobarFase2;
 import controller.plan.comprobadores.ComprobarFase3;
 import controller.plan.comprobadores.ComprobarFase4;
@@ -35,8 +23,8 @@ import controller.plan.comprobadores.ComprobarFase5;
 import controller.plan.comprobadores.ComprobarFase6;
 import controller.plan.comprobadores.ComprobarFase7;
 import controller.plan.comprobadores.ComprobarFase8;
-import controller.wizard.classes.Municipio;
-import controller.wizard.classes.phases.Phase1;
+import controller.plan.comprobadores.ComprobarFaseTexto;
+
 
 /**
  * Servlet implementation class ComprobarFase
@@ -61,7 +49,8 @@ public class ComprobarFase extends HttpServlet {
 		
 		//Chequear si se valida.
 		try {
-			switch (Integer.parseInt(request.getParameter("phase"))) {
+			int fase = Integer.parseInt(request.getParameter("phase"));
+			switch (fase) {
 				case 1:	new ComprobarFase1(request, response).execute(); break;	
 				case 2: new ComprobarFase2(request, response).execute(); break;
 				case 3: new ComprobarFase3(request, response).execute(); break;
@@ -70,6 +59,20 @@ public class ComprobarFase extends HttpServlet {
 				case 6: new ComprobarFase6(request, response).execute(); break;
 				case 7: new ComprobarFase7(request, response).execute(); break;
 				case 8: new ComprobarFase8(request, response).execute(); break;
+				case 9: new ComprobarFaseTexto(request, response, fase).execute(); break;
+				case 10: new ComprobarFase10(request, response).execute(); break;
+				case 11: new ComprobarFaseTexto(request, response, fase).execute(); break;
+				case 12: new ComprobarFaseTexto(request, response, fase).execute(); break;
+				case 13: new ComprobarFaseTexto(request, response, fase).execute(); break;
+				case 14: new ComprobarFaseTexto(request, response, fase).execute(); break;
+				case 15: new ComprobarFaseTexto(request, response, fase).execute(); break;
+				case 16: new ComprobarFaseTexto(request, response, fase).execute(); break;
+				case 17: new ComprobarFaseTexto(request, response, fase).execute(); break;
+				case 18: new ComprobarFaseTexto(request, response, fase).execute(); break;
+				case 19: new ComprobarFaseTexto(request, response, fase).execute(); break;
+				case 20: new ComprobarFaseTexto(request, response, fase).execute(); break;
+
+
 			}
 		} catch (SQLException e) {
 			new SQLError(request, response, e);

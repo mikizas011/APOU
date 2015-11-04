@@ -29,17 +29,7 @@
 			}
 		</script>
 
-		<script type="text/javascript">
-		    $(document).ready(function() {
 
-		    	$('input').on('input',function(e){
-		    	
-		    		//var pt = $( this ).parent().parent().parent().parent().get(0).tagName;
-		    		//alert(pt);
-		    		
-		    	});
-		    });
-		</script>
 
 		
 		
@@ -103,7 +93,7 @@
 								
 								<table>
 									<tr>
-										<td>Espacios libres</td>
+										<td>Zonas verdes</td>
 										<td><input name="EL<%=p.getUes().get(key).getIdUnidadEjecucion()%>:" type="number" value="<%=p.getUes().get(key).getSuperficieEspaciosLibres() %>" ></td>
 									</tr>
 									<tr>

@@ -27,7 +27,7 @@ public class Phase6 extends Phase{
 				}
 				
 				OrdenacionUrbanisticaPormenorizada tipo = tipos.get(pr.getValue().getIdTipoOrdenacionPormenorizada());
-				double edif = (tipo.getCoefBR() * pr.getValue().getEbrN()) + (tipo.getCoefSRPB() * pr.getValue().getEsrpbN()) + (tipo.getCoefSRPP() * pr.getValue().getEsrppN());
+				double edif = (tipo.getCoefBR() * pr.getValue().getEbrT()) + (tipo.getCoefSRPB() * pr.getValue().getEsrpbT()) + (tipo.getCoefSRPP() * pr.getValue().getEsrppT());
 				
 				if(!edificabilidadesPonderadas.get(entry.getValue().getDenominacion()).containsKey(tipo.getDenominacion())){
 					edificabilidadesPonderadas.get(entry.getValue().getDenominacion()).put(tipo.getDenominacion(), 0.0);

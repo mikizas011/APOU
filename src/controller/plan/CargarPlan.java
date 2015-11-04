@@ -21,6 +21,7 @@ import controller.errores.SQLError;
 import controller.wizard.classes.Municipio;
 import controller.wizard.classes.Plan;
 import controller.wizard.classes.phases.Phase1;
+import controller.wizard.classes.phases.Phase10;
 import controller.wizard.classes.phases.Phase2;
 import controller.wizard.classes.phases.Phase3;
 import controller.wizard.classes.phases.Phase4;
@@ -28,6 +29,7 @@ import controller.wizard.classes.phases.Phase5;
 import controller.wizard.classes.phases.Phase6;
 import controller.wizard.classes.phases.Phase7;
 import controller.wizard.classes.phases.Phase8;
+import controller.wizard.classes.phases.PhaseTexto;
 import model.Dao;
 
 /**
@@ -132,6 +134,19 @@ public class CargarPlan extends HttpServlet {
 						case 6: phase6(request, response, dao, idPlan, faseActual); break;
 						case 7: phase7(request, response, dao, idPlan, faseActual); break;
 						case 8: phase8(request, response, dao, idPlan, faseActual); break;
+						case 9: phaseTexto(request, response, dao, idPlan, faseActual, fase); break;
+						case 10: phase10(request, response, dao, idPlan, faseActual); break;
+						case 11: phaseTexto(request, response, dao, idPlan, faseActual, fase); break;
+						case 12: phaseTexto(request, response, dao, idPlan, faseActual, fase); break;
+						case 13: phaseTexto(request, response, dao, idPlan, faseActual, fase); break;
+						case 14: phaseTexto(request, response, dao, idPlan, faseActual, fase); break;
+						case 15: phaseTexto(request, response, dao, idPlan, faseActual, fase); break;
+						case 16: phaseTexto(request, response, dao, idPlan, faseActual, fase); break;
+						case 17: phaseTexto(request, response, dao, idPlan, faseActual, fase); break;
+						case 18: phaseTexto(request, response, dao, idPlan, faseActual, fase); break;
+						case 19: phaseTexto(request, response, dao, idPlan, faseActual, fase); break;
+						case 20: phaseTexto(request, response, dao, idPlan, faseActual, fase); break;
+
 					}
 					
 				} catch (SQLException e) {
@@ -339,6 +354,49 @@ public class CargarPlan extends HttpServlet {
 		request.setAttribute("phase8", p);
 		
 		request.getRequestDispatcher("/user_area/phases/phase8.jsp").forward(request, response);
+		
+	}
+	
+	
+	
+	public void phase10(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan, int faseActual) throws SQLException, ServletException, IOException{
+		
+		
+		
+		Phase10 p = null;
+		
+		p = dao.getWizard().getPhase10(idPlan);
+		
+		p.setFase(faseActual);
+
+		
+		dao.close();
+		dao = null;
+		
+		request.setAttribute("phase10", p);
+		
+		request.getRequestDispatcher("/user_area/phases/phase10.jsp").forward(request, response);
+		
+	}
+	
+	
+public void phaseTexto(HttpServletRequest request, HttpServletResponse response, Dao dao, int idPlan, int faseActual, int fase) throws SQLException, ServletException, IOException{
+		
+		
+		
+		PhaseTexto p = null;
+		
+		p = dao.getWizard().getPhaseTexto(idPlan, fase);
+		
+		p.setFase(fase);
+
+		
+		dao.close();
+		dao = null;
+		
+		request.setAttribute("phase" + fase, p);
+		
+		request.getRequestDispatcher("/user_area/phases/phase"+fase+".jsp").forward(request, response);
 		
 	}
 }

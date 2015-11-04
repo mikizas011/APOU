@@ -373,7 +373,29 @@ public class ComprobarFase4 extends CerrarFase{
 
 	@Override
 	ArrayList<String> checkPhase(ArrayList<String> msg, Phase pa) {
-		// TODO Auto-generated method stub
+		
+		Phase4 fase = (Phase4) pa;
+		
+		boolean hayUno = false;
+		
+		for(OrdenacionUrbanisticaPormenorizada ordenacion : fase.getInsert().values()){
+			if(ordenacion.getCoefBR() == 1 || ordenacion.getCoefSRPB() == 1 || ordenacion.getCoefSRPP() == 1){
+				hayUno = true;
+				break;
+			}
+		}
+		
+		for(OrdenacionUrbanisticaPormenorizada ordenacion : fase.getUpdate().values()){
+			if(ordenacion.getCoefBR() == 1 || ordenacion.getCoefSRPB() == 1 || ordenacion.getCoefSRPP() == 1 || hayUno){
+				hayUno = true;
+				break;
+			}
+		}
+		
+		if(!hayUno){
+			msg.add("Debe haber por lo menos un coeficiente con valor 1 en los tipos de calificación pormenorizados.");
+		}
+		
 		return msg;
 	}
 	

@@ -16,8 +16,10 @@ import javax.servlet.http.HttpServletResponse;
 
 
 
+
 import controller.errores.SQLError;
 import controller.wizard.classes.P2unidadEjecucion;
+import controller.wizard.classes.ParcelaAportada;
 import controller.wizard.classes.phases.Phase;
 import controller.wizard.classes.phases.Phase1;
 import controller.wizard.classes.phases.Phase2;
@@ -53,6 +55,11 @@ public class ComprobarFase2 extends CerrarFase{
 				}
 			}
 			else if(entry.getKey().contains("servidumbre")){
+				if(!isPositive(request.getParameter(entry.getKey()))){
+					errorSup = true;
+				}
+			}
+			else if(entry.getKey().contains("taludes")){
 				if(!isPositive(request.getParameter(entry.getKey()))){
 					errorSup = true;
 				}
@@ -137,6 +144,7 @@ public class ComprobarFase2 extends CerrarFase{
 				}
 				
 				p2.setSuperficieServidumbre(Integer.parseInt(request.getParameter(entry.getValue().getDenominacion() + ":servidumbre")));
+				p2.setSuperficieTaludes(Integer.parseInt(request.getParameter(entry.getValue().getDenominacion() + ":taludes")));
 				
 				
 			}
@@ -199,6 +207,13 @@ public class ComprobarFase2 extends CerrarFase{
 					p2.setSuperficieServidumbre(Integer.parseInt(request.getParameter(entry.getValue().getDenominacion() + ":servidumbre")));
 				}
 				
+				if(!isPositive(request.getParameter(entry.getValue().getDenominacion() + ":taludes"))){
+					p2.setSuperficieTaludes(0);
+				}
+				else{
+					p2.setSuperficieServidumbre(Integer.parseInt(request.getParameter(entry.getValue().getDenominacion() + ":taludes")));
+				}
+				
 			}
 				
 			
@@ -212,7 +227,34 @@ public class ComprobarFase2 extends CerrarFase{
 
 	@Override
 	ArrayList<String> checkPhase(ArrayList<String> msg, Phase pa) {
-		// TODO Auto-generated method stub
+		
+		try {
+			Phase2 fase = (Phase2) pa;
+			String msgServidumbres = "La suma de superficies de una unidad de ejecución tiene que ser mayor que la superficie de suelo con servidumbres sectoriales de esa misma unidad de ejecución.";
+			double superficieSector = 0;
+			
+			for(P2unidadEjecucion p2 : fase.getMap().values()){
+				double superficieUnidadEjecucion = 0;
+				for(ParcelaAportada pap : p2.getParcelas()){
+					superficieUnidadEjecucion += pap.getSuperficie();
+				}
+				if(p2.getSuperficieServidumbre() > superficieUnidadEjecucion && !msg.contains(msgServidumbres)){
+					msg.add(msgServidumbres);
+				}
+				superficieSector += superficieUnidadEjecucion;
+			}
+			
+			double superficieSectorF1 = dao.getWizard().getSuperficieSector(pa.getIdPlan());
+			
+			if(superficieSector != superficieSectorF1){
+				msg.add("La suma de superficies de cada parcela aportada tiene que ser igual a la superficie del sector definida en la fase 1 (" + (int)superficieSectorF1 + " metros cuadrados).");
+			}
+			
+		} catch (SQLException e) {
+			new SQLError(request, response, e);
+		}
+		
+		
 		return msg;
 	}
 	

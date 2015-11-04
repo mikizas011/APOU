@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class P2unidadEjecucion {
 
-	private int superficieServidumbre, idUnidadEjecucion, numeroParecelasAportadas;
+	private int superficieServidumbre, superficieTaludes, idUnidadEjecucion, numeroParecelasAportadas;
 	private ArrayList<ParcelaAportada> parcelas;
 	private String denominacion;
 	
@@ -27,7 +27,7 @@ public class P2unidadEjecucion {
 
 		
 	}
-	public P2unidadEjecucion(int superficieServidumbre, int idUnidadEjecucion,
+	public P2unidadEjecucion(int superficieServidumbre, int superficieTaludes, int idUnidadEjecucion,
 			int numeroParecelasAportadas,
 			String denominacion) {
 		super();
@@ -36,6 +36,7 @@ public class P2unidadEjecucion {
 		this.numeroParecelasAportadas = numeroParecelasAportadas;
 		this.parcelas = new ArrayList<ParcelaAportada>();
 		this.denominacion = denominacion;
+		this.superficieTaludes = superficieTaludes;
 	}
 	public int getSuperficieServidumbre() {
 		return superficieServidumbre;
@@ -86,6 +87,12 @@ public class P2unidadEjecucion {
 			sup += parcelas.get(i).getSuperficie();
 		}
 		return sup;
+	}
+	public int getSuperficieTaludes() {
+		return superficieTaludes;
+	}
+	public void setSuperficieTaludes(int superficieTaludes) {
+		this.superficieTaludes = superficieTaludes;
 	}
 	
 	

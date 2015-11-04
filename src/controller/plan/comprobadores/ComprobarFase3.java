@@ -288,7 +288,28 @@ public class ComprobarFase3 extends CerrarFase{
 
 	@Override
 	ArrayList<String> checkPhase(ArrayList<String> msg, Phase pa) {
-		// TODO Auto-generated method stub
+		Phase3 fase = (Phase3) pa;
+		
+		try {
+			
+			double superficieTipos = 0;
+			
+			for(OrdenacionUrbanisticaEstructural ordenacion : fase.getInsert().values()){
+				superficieTipos += ordenacion.getSuperficie();
+			}
+			for(OrdenacionUrbanisticaEstructural ordenacion : fase.getUpdate().values()){
+				superficieTipos += ordenacion.getSuperficie();
+			}
+			
+			double superficieSector = dao.getWizard().getSuperficieSector(pa.getIdPlan());
+			
+			if(superficieTipos != superficieSector){
+				msg.add("La suma de superficies de cada tipo de ordenación estructural tiene que ser igual a la superficie del sector definida en la fase 1 (" + (int)superficieSector + " metros cuadrados).");
+			}
+			
+		} catch (SQLException e) {
+			new SQLError(request, response, e);
+		}
 		return msg;
 	}
 	
